@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            Czy chcesz się wylogować?
+        </div>
+        <div class="popup-wybor">
+            <div id="tak">Tak</div>
+            <div id="nie">Nie</div>
+        </div>
+
+      </div>
+    <div class="chatroom">
+        <div id="theme">Swap Theme</div>
+        <div class="side-menu">
+            <div class="person" id="osoba-1">Osoba 1</div>
+            <div class="person" id="osoba-2">Osoba 2</div>
+            <div class="konto">Niezalogowany</div>
+        </div>
+        <div class="chat">
+            <h1>Wybierz Konto</h1>
+            <div id="chat-messages"></div>
+            <div class="text">
+                <div id="reset-button"><img src="bin.png" id="bin">
+                </div>
+                <form id="messageForm">
+                <input type="text" id="textarea" autocomplete="off">
+                <input type="submit" id="send">
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
