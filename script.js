@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (isTaken) {
                         element.style.display = "none";
                 }
-                else if(isTaken == false){
+                else if(isTaken == false && konto.textContent == "Niezalogowany"){
                         element.style.display = "flex";
                 }
             }
@@ -65,21 +65,6 @@ function updateAccountStatus(id, action) {
     var params = "action=" + action + "&id=" + encodeURIComponent(id);
     xhr.send(params);
 }
-
-    // Event listener for clicking on a person
-    document.querySelectorAll('.person').forEach(function(person) {
-        person.addEventListener('click', function() {
-            id = this.id;
-            document.querySelector('.konto').textContent = id;
-            document.querySelectorAll('.person').forEach(function(person) {
-                person.style.display = 'none';
-            });
-            document.querySelector('.text').style.display = 'flex';
-            document.getElementById('chat-messages').style.display = 'flex';
-            document.querySelector('.chat h1').textContent = 'Witaj w chacie z ' + id; 
-        });
-    });
-
     // Event listener for selecting account 1
     document.getElementById('osoba-1').addEventListener('click', () => {
         id = "osoba 1";
@@ -92,8 +77,9 @@ function updateAccountStatus(id, action) {
         document.getElementById('chat-messages').style.display = 'block';
         document.querySelector('.chat h1').textContent = 'CZATUJ z osobą 2';
         checkAccountAvailability("osoba-1"); 
-    });
 
+    });
+    
     // Event listener for selecting account 2
     document.getElementById('osoba-2').addEventListener('click', () => {
         id = "osoba 2";
@@ -194,18 +180,47 @@ function updateAccountStatus(id, action) {
         document.querySelector('.chatroom').classList.remove("blur");
     });
 
-    // Toggle dark/light theme
-    let isDarkTheme = true;
+    let isDarkTheme = false;
+    let canChangeTheme = true;
+    
     document.getElementById('theme').addEventListener('click', () => {
-        if (isDarkTheme) {
-            document.querySelector('.chatroom').style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
-            document.querySelector('.chatroom').style.color = "black";
-            document.querySelector('.popup').style.color = "black";
-        } else {
-            document.querySelector('.chatroom').style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
-            document.querySelector('.chatroom').style.color = "white";
-            document.querySelector('.popup').style.color = "white";
-        }
+        if (!canChangeTheme) return;
+    
+        const chatroom = document.querySelector('.chatroom');
+        const popup = document.querySelector('.popup');
+    
+        // Disable the theme button
+        canChangeTheme = false;
+        setTimeout(() => {
+            canChangeTheme = true;
+        }, 1000);
+    
+        // Toggle theme
         isDarkTheme = !isDarkTheme;
+    
+        // Add animation class to trigger transition
+        chatroom.classList.add('animate-theme');
+        popup.classList.add('animate-theme');
+    
+        // Update styles after a delay to ensure animation starts
+        setTimeout(() => {
+            if (isDarkTheme) {
+                chatroom.style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
+                chatroom.style.color = "black";
+                popup.style.color = "black";
+            } else {
+                chatroom.style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
+                chatroom.style.color = "white";
+                popup.style.color = "white";
+            }
+    
+            // Remove animation class after transition ends
+            setTimeout(() => {
+                chatroom.classList.remove('animate-theme');
+                popup.classList.remove('animate-theme');
+            }, 1000); // Adjust this delay to match your CSS animation duration
+        }, 10); // A small delay to ensure animation class is applied before changing styles
     });
-});
+    
+});    
+

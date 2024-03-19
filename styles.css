@@ -5,16 +5,32 @@ body {
     display: flex;
     
 }
+@keyframes backgroundChange {
+    0% {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(0);
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0.3);
+        transform: scale(1);
+    }
+}
 
 .chatroom {
     height: 100vh;
-    width: 100% ;
-    display: flex; 
+    width: 100%;
+    display: flex;
     color: white;
     background: radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%);
-        backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    animation: backgroundChange 1s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    transition: color 0.5s ease;
 }
-
+  .animate-theme {
+    animation: backgroundChange 1s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    transition: color 0.7s ease;
+  }
+    
 .side-menu {
     border-right: 3px solid black;
     height: 100vh;
