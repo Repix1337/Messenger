@@ -1,13 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
-    let konto = document.querySelector(".konto");
+    const theme = document.getElementById('theme');
+    const chatMessages = document.getElementById('chat-messages');
+    const textArea = document.getElementById('textarea');
+    const sendButton = document.getElementById('send');
+    const osoba1 = document.getElementById('osoba-1');
+    const osoba2 = document.getElementById('osoba-2');
+    const konto = document.querySelector(".konto");
+    const popup = document.querySelector('.popup');
+    const chatroom = document.querySelector('.chatroom');
+
     let id;
+
     function loadMessages() {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "load_messages.php", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                document.getElementById('chat-messages').innerHTML = xhr.responseText;
-                document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+                chatMessages.innerHTML = xhr.responseText;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 // Check account availability after loading messages
                 checkAccountAvailability("osoba-1");
                 checkAccountAvailability("osoba-2");
@@ -28,10 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 var isTaken = JSON.parse(xhr.responseText).istaken;
                 var element = document.getElementById(accountId);
                 if (isTaken) {
-                        element.style.display = "none";
-                }
-                else if(isTaken == false && konto.textContent == "Niezalogowany"){
-                        element.style.display = "flex";
+                    element.style.display = "none";
+                } else if (isTaken == false && konto.textContent == "Niezalogowany") {
+                    element.style.display = "flex";
                 }
             }
         };
@@ -41,55 +50,54 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('beforeunload', function(event) {
         if (id == "osoba 1") {
             updateAccountStatus("osoba-1", "release");
-            document.getElementById("osoba-1").style.display = "flex";
+            osoba1.style.display = "flex";
         } else if (id == "osoba 2") {
             updateAccountStatus("osoba-2", "release");
-            document.getElementById("osoba-2").style.display = "flex";
+            osoba2.style.display = "flex";
         }
     });
     
-function updateAccountStatus(id, action) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "update_account_status.php", true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            if (response.success) {
-                console.log("Account status updated successfully.");
-            } else {
-                console.error("Failed to update account status.");
+    function updateAccountStatus(id, action) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "update_account_status.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    console.log("Account status updated successfully.");
+                } else {
+                    console.error("Failed to update account status.");
+                }
             }
-        }
-    };
-    var params = "action=" + action + "&id=" + encodeURIComponent(id);
-    xhr.send(params);
-}
+        };
+        var params = "action=" + action + "&id=" + encodeURIComponent(id);
+        xhr.send(params);
+    }
     // Event listener for selecting account 1
-    document.getElementById('osoba-1').addEventListener('click', () => {
+    osoba1.addEventListener('click', () => {
         id = "osoba 1";
-        document.querySelector('.konto').textContent = id;
+        konto.textContent = id;
         updateAccountStatus("osoba-1", "take");
         document.querySelectorAll('.person').forEach(function(person) {
             person.style.display = 'none';
         });
         document.querySelector('.text').style.display = 'flex';
-        document.getElementById('chat-messages').style.display = 'block';
+        chatMessages.style.display = 'block';
         document.querySelector('.chat h1').textContent = 'CZATUJ z osobą 2';
         checkAccountAvailability("osoba-1"); 
-
     });
     
     // Event listener for selecting account 2
-    document.getElementById('osoba-2').addEventListener('click', () => {
+    osoba2.addEventListener('click', () => {
         id = "osoba 2";
-        document.querySelector('.konto').textContent = id;
+        konto.textContent = id;
         updateAccountStatus("osoba-2", "take");
         document.querySelectorAll('.person').forEach(function(person) {
             person.style.display = 'none';
         });
         document.querySelector('.text').style.display = 'flex';
-        document.getElementById('chat-messages').style.display = 'block';
+        chatMessages.style.display = 'block';
         document.querySelector('.chat h1').textContent = 'CZATUJ z osobą 1';
         checkAccountAvailability("osoba-2"); 
     });
@@ -97,8 +105,8 @@ function updateAccountStatus(id, action) {
     // Event listener for sending a message
     document.getElementById('messageForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        var messageText = document.getElementById('textarea').value;
-        var sender = document.querySelector('.konto').textContent.trim();
+        var messageText = textArea.value;
+        var sender = konto.textContent.trim();
 
         var formData = new FormData();
         formData.append('message', messageText);
@@ -109,7 +117,7 @@ function updateAccountStatus(id, action) {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var newMessage = document.createElement('div');
-                if (sender === document.querySelector('.konto').textContent.trim()) {
+                if (sender === konto.textContent.trim()) {
                     newMessage.classList.add('self');
                 } else {
                     newMessage.classList.add('other');
@@ -122,13 +130,13 @@ function updateAccountStatus(id, action) {
                     newMessage.style.float = "right";
                 }
                 let br = document.createElement('br');
-                document.getElementById('chat-messages').appendChild(newMessage);
-                document.getElementById('chat-messages').appendChild(br);
-                document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
-                document.getElementById('textarea').value = '';
-                document.getElementById('send').disabled = true;
+                chatMessages.appendChild(newMessage);
+                chatMessages.appendChild(br);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                textArea.value = '';
+                sendButton.disabled = true;
                 setTimeout(() => {
-                    document.getElementById('send').disabled = false;
+                    sendButton.disabled = false;
                 }, 500);
             }
         };
@@ -146,38 +154,37 @@ function updateAccountStatus(id, action) {
     // Event listener for clicking on the account name
     konto.addEventListener('click', () => {
         if (konto.textContent == "osoba 1" || konto.textContent == "osoba 2") {
-            document.querySelector('.popup').style.display = "block";
-            document.querySelector('.chatroom').classList.add("blur");
+            popup.style.display = "block";
+            chatroom.classList.add("blur");
         }
     });
 
     // Event listener for confirming account selection
     document.getElementById("tak").addEventListener('click', () => {
         document.querySelector('.text').style.display = 'none';
-        document.getElementById('chat-messages').style.display = 'none';
+        chatMessages.style.display = 'none';
         document.querySelectorAll('.person').forEach(function(person) {
             person.style.display = 'flex';
         });
-        document.querySelector('.konto').textContent = "Niezalogowany";
-        document.querySelector('.chatroom').classList.remove("blur");
-        document.querySelector('.popup').style.display = "none";
+        konto.textContent = "Niezalogowany";
+        chatroom.classList.remove("blur");
+        popup.style.display = "none";
         document.querySelector('.chat h1').textContent = 'Wybierz konto';
         if (id == "osoba 1") {
             // Make account 1 available again
             updateAccountStatus("osoba-1", "release");
-            document.getElementById("osoba-1").style.display = "flex";
+            osoba1.style.display = "flex";
         } else if (id == "osoba 2") {
             // Make account 2 available again
             updateAccountStatus("osoba-2", "release");
-            document.getElementById("osoba-2").style.display = "flex";
+            osoba2.style.display = "flex";
         }
-        
     });
 
     // Event listener for cancelling account selection
     document.getElementById("nie").addEventListener('click', () => {
-        document.querySelector('.popup').style.display = "none";
-        document.querySelector('.chatroom').classList.remove("blur");
+        popup.style.display = "none";
+        chatroom.classList.remove("blur");
     });
 
     let isDarkTheme = false;
