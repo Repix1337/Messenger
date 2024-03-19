@@ -3,16 +3,18 @@ body {
     height: 100vh;
     width: 100%;
     display: flex;
+    background-color: black;
     
 }
 @keyframes backgroundChange {
     0% {
-        background-color: rgba(255, 255, 255, 0.2);
-        transform: scale(0);
+        background-color: rgba(0, 0, 0, 0); /* Keep initial background transparent */
+        transform: scale(5); /* Start from scale 0 */
+        overflow: hidden;
     }
     100% {
-        background-color: rgba(0, 0, 0, 0.3);
-        transform: scale(1);
+        background-color: rgba(0, 0, 0, 0.3); /* Expand to the corners with black background */
+        transform: scale(1); /* Expand to twice the size */
     }
 }
 
@@ -23,13 +25,20 @@ body {
     color: white;
     background: radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%);
     backdrop-filter: blur(5px);
-    animation: backgroundChange 1s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    animation: none; /* Remove animation from default state */
+}
+
+.animate-theme {
+    animation: backgroundChange 0.5s cubic-bezier( 0.92, -0.01, 0.54, 0.49 )  forwards; /* Adjust animation duration */
     transition: color 0.5s ease;
 }
-  .animate-theme {
-    animation: backgroundChange 1s cubic-bezier(0.5, 0, 0.5, 1) forwards;
-    transition: color 0.7s ease;
-  }
+.hidden {
+    display: none !important;
+}
+
+
+
+
     
 .side-menu {
     border-right: 3px solid black;

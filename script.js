@@ -194,40 +194,45 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!canChangeTheme) return;
     
         const chatroom = document.querySelector('.chatroom');
-        const popup = document.querySelector('.popup');
+        const otherElements = document.querySelectorAll('.side-menu, .popup,.chat,#theme');
     
         // Disable the theme button
         canChangeTheme = false;
         setTimeout(() => {
             canChangeTheme = true;
-        }, 1000);
+        }, 1500); // Adjust delay as needed
     
         // Toggle theme
         isDarkTheme = !isDarkTheme;
     
         // Add animation class to trigger transition
         chatroom.classList.add('animate-theme');
-        popup.classList.add('animate-theme');
+    
+        // Hide other elements
+        otherElements.forEach(element => {
+            element.classList.toggle('hidden');
+        });
     
         // Update styles after a delay to ensure animation starts
         setTimeout(() => {
             if (isDarkTheme) {
                 chatroom.style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
                 chatroom.style.color = "black";
-                popup.style.color = "black";
             } else {
                 chatroom.style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
                 chatroom.style.color = "white";
-                popup.style.color = "white";
             }
     
             // Remove animation class after transition ends
             setTimeout(() => {
                 chatroom.classList.remove('animate-theme');
-                popup.classList.remove('animate-theme');
-            }, 1000); // Adjust this delay to match your CSS animation duration
+    
+                // Show other elements
+                otherElements.forEach(element => {
+                    element.classList.toggle('hidden');
+                });
+            }, 500); // Adjust delay as needed
         }, 10); // A small delay to ensure animation class is applied before changing styles
     });
-    
-});    
+});
 
