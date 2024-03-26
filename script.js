@@ -113,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function clearMessages() {
         // Functionality to clear messages
         fetch('save_message.php');
+        loadMessages;
     }
 
     function logoutPopUp() {
@@ -217,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
    
     chatMessages.addEventListener('click', (event) => {
         let mess = event.target;
-        if (mess.classList.contains('message')) {
+        if (mess.classList.contains('message') && mess.classList.contains(id)) {
             let messageID = mess.id;
             let xhr = new XMLHttpRequest();
             xhr.open('POST', 'delete_message.php', true);
