@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const osoba1 = document.getElementById('osoba-1');
     const osoba2 = document.getElementById('osoba-2');
     const konto = document.querySelector(".konto");
-    const popup = document.getElementById('popup'); // Corrected selector
+    const popup = document.getElementById('popup'); 
     const chatroom = document.querySelector('.chatroom');
+    let isDarkTheme = false;
+    let canChangeTheme = true;
     let id;
     let messageID;
 
@@ -25,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
         xhr.send();
-    }
-    
+    };
+    loadMessages();
 
     function checkAccountAvailability(accountId) {
         var xhr = new XMLHttpRequest();
@@ -84,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 var newMessage = document.createElement('div');
                 if (sender === konto.textContent.trim()) {
-                    newMessage.classList.add('self');
+                    newMessage.classList.add('message',id);
                 } else {
                     newMessage.classList.add('other');
                 }
@@ -156,8 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loadMessages;
         }
     }
-    let isDarkTheme = false;
-    let canChangeTheme = true;
+    
     function toggleTheme() {
         
 
@@ -242,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Periodically load messages
-        setInterval(loadMessages, 1500);
+        setInterval(loadMessages, 2500);
     });
-
+    loadMessages();
 
