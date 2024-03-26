@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const konto = document.querySelector(".konto");
     const popup = document.getElementById('popup'); // Corrected selector
     const chatroom = document.querySelector('.chatroom');
-    const messages = document.querySelector('.message');
     let id;
     let messageID;
 
@@ -25,8 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkAccountAvailability("osoba-2");            
             }
         };
-        var params = "messageID=" + encodeURIComponent(messageID); // Correctly format the data
-        xhr.send(params);
+        xhr.send();
     }
     
 
@@ -217,9 +215,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Additional functionality
    
-        chatMessages.addEventListener('mouseover', () => {
-            console.log('Mouseover event triggered');
-        });
+    chatMessages.addEventListener('click', (event) => {
+        let mess = event.target;
+        if (mess.classList.contains('message')) {
+            let messageID = mess.id;
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'delete_message.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        mess.remove();
+                    } else {
+                        console.error('Error deleting message');
+                    }
+                }
+            };
+            xhr.send('messageID=' + encodeURIComponent(messageID))
+            loadMessages;
+        }
+    });
+    
+    
      
     window.addEventListener('beforeunload', function(event) {
             updateAccountStatus(id, "release");
