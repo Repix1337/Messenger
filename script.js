@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "load_messages.php", true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function() {   
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 chatMessages.innerHTML = xhr.responseText;
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -137,10 +137,10 @@ document.addEventListener("DOMContentLoaded", () => {
             updateAccountStatus(id, "release");
             document.getElementById(id).style.display = "flex";
     };
-
+    let isDarkTheme = false;
+    let canChangeTheme = true;
     function toggleTheme() {
-        let isDarkTheme = false;
-        let canChangeTheme = true;
+        
 
         if (!canChangeTheme) return;
 
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.querySelector("body").style.background = "rgb(0,0,0)";
 
             }
-
+            
             // Remove animation class after transition ends
             setTimeout(() => {
                 chatroom.classList.remove('animate-theme');
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Periodically load messages
-    setInterval(loadMessages, 500);
-});
+        setInterval(loadMessages, 1500);
+    });
 
 
