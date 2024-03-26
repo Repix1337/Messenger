@@ -136,6 +136,26 @@ document.addEventListener("DOMContentLoaded", () => {
             updateAccountStatus(id, "release");
             document.getElementById(id).style.display = "flex";
     };
+    function ClickMessage(event){
+        let mess = event.target;
+        if (mess.classList.contains('message') && mess.classList.contains(id)) {
+            let messageID = mess.id;
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'delete_message.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        mess.remove();
+                    } else {
+                        console.error('Error deleting message');
+                    }
+                }
+            };
+            xhr.send('messageID=' + encodeURIComponent(messageID))
+            loadMessages;
+        }
+    }
     let isDarkTheme = false;
     let canChangeTheme = true;
     function toggleTheme() {
@@ -213,31 +233,8 @@ document.addEventListener("DOMContentLoaded", () => {
         chatroom.classList.remove("blur");
     });
     theme.addEventListener('click', toggleTheme);
-
-    // Additional functionality
+    chatMessages.addEventListener('click', (event) => ClickMessage(event));
    
-    chatMessages.addEventListener('click', (event) => {
-        let mess = event.target;
-        if (mess.classList.contains('message') && mess.classList.contains(id)) {
-            let messageID = mess.id;
-            let xhr = new XMLHttpRequest();
-            xhr.open('POST', 'delete_message.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        mess.remove();
-                    } else {
-                        console.error('Error deleting message');
-                    }
-                }
-            };
-            xhr.send('messageID=' + encodeURIComponent(messageID))
-            loadMessages;
-        }
-    });
-    
-    
      
     window.addEventListener('beforeunload', function(event) {
             updateAccountStatus(id, "release");
