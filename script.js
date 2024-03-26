@@ -6,26 +6,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const osoba1 = document.getElementById('osoba-1');
     const osoba2 = document.getElementById('osoba-2');
     const konto = document.querySelector(".konto");
-    const popup = document.querySelector('.popup');
+    const popup = document.getElementById('popup'); // Corrected selector
     const chatroom = document.querySelector('.chatroom');
-
+    const messages = document.querySelector('.message');
     let id;
+    let messageID;
 
     function loadMessages() {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "load_messages.php", true);
+        xhr.open("POST", "load_messages.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 chatMessages.innerHTML = xhr.responseText;
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 // Check account availability after loading messages
                 checkAccountAvailability("osoba-1");
-                checkAccountAvailability("osoba-2");
+                checkAccountAvailability("osoba-2");            
             }
         };
-        xhr.send();
+        var params = "messageID=" + encodeURIComponent(messageID); // Correctly format the data
+        xhr.send(params);
     }
-    loadMessages();
+    
 
     function checkAccountAvailability(accountId) {
         var xhr = new XMLHttpRequest();
@@ -34,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 console.log(xhr.responseText);
-    
+
                 var isTaken = JSON.parse(xhr.responseText).istaken;
                 var element = document.getElementById(accountId);
                 if (isTaken) {
@@ -47,16 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var params = "id=" + encodeURIComponent(accountId); // Encode parameter value
         xhr.send(params);
     }
-    window.addEventListener('beforeunload', function(event) {
-        if (id == "osoba 1") {
-            updateAccountStatus("osoba-1", "release");
-            osoba1.style.display = "flex";
-        } else if (id == "osoba 2") {
-            updateAccountStatus("osoba-2", "release");
-            osoba2.style.display = "flex";
-        }
-    });
-    
+
     function updateAccountStatus(id, action) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "update_account_status.php", true);
@@ -74,45 +68,19 @@ document.addEventListener("DOMContentLoaded", () => {
         var params = "action=" + action + "&id=" + encodeURIComponent(id);
         xhr.send(params);
     }
-    // Event listener for selecting account 1
-    osoba1.addEventListener('click', () => {
-        id = "osoba 1";
-        konto.textContent = id;
-        updateAccountStatus("osoba-1", "take");
-        document.querySelectorAll('.person').forEach(function(person) {
-            person.style.display = 'none';
-        });
-        document.querySelector('.text').style.display = 'flex';
-        chatMessages.style.display = 'block';
-        document.querySelector('.chat h1').textContent = 'CZATUJ z osobą 2';
-        checkAccountAvailability("osoba-1"); 
-    });
-    
-    // Event listener for selecting account 2
-    osoba2.addEventListener('click', () => {
-        id = "osoba 2";
-        konto.textContent = id;
-        updateAccountStatus("osoba-2", "take");
-        document.querySelectorAll('.person').forEach(function(person) {
-            person.style.display = 'none';
-        });
-        document.querySelector('.text').style.display = 'flex';
-        chatMessages.style.display = 'block';
-        document.querySelector('.chat h1').textContent = 'CZATUJ z osobą 1';
-        checkAccountAvailability("osoba-2"); 
-    });
 
-    // Event listener for sending a message
-    document.getElementById('messageForm').addEventListener('submit', function(event) {
+    function sendMessage(event) {
         event.preventDefault();
-        var messageText = textArea.value;
-        var sender = konto.textContent.trim();
-
-        var formData = new FormData();
+        const messageText = textArea.value;
+        const sender = konto.textContent.trim();
+        messageID = Date.now() + Math.random().toString(36).substr(2, 9); // Generate unique messageID
+        // AJAX request to send message
+        const formData = new FormData();
         formData.append('message', messageText);
         formData.append('sender', sender);
+        formData.append('messageID', messageID);
 
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.open("POST", "save_message.php", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
@@ -122,13 +90,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     newMessage.classList.add('other');
                 }
-                if (sender == "osoba 1") {
+                if (sender == "osoba-1") {
                     newMessage.textContent = sender + ': ' + messageText;
                     newMessage.style.float = "left";
-                } else if (sender == "osoba 2") {
+                } else if (sender == "osoba-2") {
                     newMessage.textContent = messageText + ' :' + sender;
                     newMessage.style.float = "right";
                 }
+                newMessage.setAttribute("id", messageID);
                 let br = document.createElement('br');
                 chatMessages.appendChild(newMessage);
                 chatMessages.appendChild(br);
@@ -137,30 +106,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 sendButton.disabled = true;
                 setTimeout(() => {
                     sendButton.disabled = false;
-                }, 500);
+                }, 800);
             }
         };
         xhr.send(formData);
-    });
+    }
 
-    // Event listener for clearing messages
-    document.getElementById('bin').addEventListener('click', () => {
-        fetch('save_message.php')
-    });
+    function clearMessages() {
+        // Functionality to clear messages
+        fetch('save_message.php');
+    }
 
-    // Periodically load messages
-    setInterval(loadMessages, 500);
-
-    // Event listener for clicking on the account name
-    konto.addEventListener('click', () => {
-        if (konto.textContent == "osoba 1" || konto.textContent == "osoba 2") {
+    function logoutPopUp() {
+        if (konto.textContent == "osoba-1" || konto.textContent == "osoba-2") {
             popup.style.display = "block";
             chatroom.classList.add("blur");
         }
-    });
-
+    }
     // Event listener for confirming account selection
-    document.getElementById("tak").addEventListener('click', () => {
+    function Logout(){
         document.querySelector('.text').style.display = 'none';
         chatMessages.style.display = 'none';
         document.querySelectorAll('.person').forEach(function(person) {
@@ -170,69 +134,100 @@ document.addEventListener("DOMContentLoaded", () => {
         chatroom.classList.remove("blur");
         popup.style.display = "none";
         document.querySelector('.chat h1').textContent = 'Wybierz konto';
-        if (id == "osoba 1") {
-            // Make account 1 available again
-            updateAccountStatus("osoba-1", "release");
-            osoba1.style.display = "flex";
-        } else if (id == "osoba 2") {
-            // Make account 2 available again
-            updateAccountStatus("osoba-2", "release");
-            osoba2.style.display = "flex";
-        }
-    });
+            updateAccountStatus(id, "release");
+            document.getElementById(id).style.display = "flex";
+    };
 
-    // Event listener for cancelling account selection
-    document.getElementById("nie").addEventListener('click', () => {
-        popup.style.display = "none";
-        chatroom.classList.remove("blur");
-    });
+    function toggleTheme() {
+        let isDarkTheme = false;
+        let canChangeTheme = true;
 
-    let isDarkTheme = false;
-    let canChangeTheme = true;
-    
-    document.getElementById('theme').addEventListener('click', () => {
         if (!canChangeTheme) return;
-    
+
         const chatroom = document.querySelector('.chatroom');
         const otherElements = document.querySelectorAll('.side-menu, .popup,.chat,#theme');
-    
+
         // Disable the theme button
         canChangeTheme = false;
         setTimeout(() => {
             canChangeTheme = true;
         }, 1500); // Adjust delay as needed
-    
+
         // Toggle theme
         isDarkTheme = !isDarkTheme;
-    
+
         // Add animation class to trigger transition
         chatroom.classList.add('animate-theme');
-    
+
         // Hide other elements
         otherElements.forEach(element => {
             element.classList.toggle('hidden');
         });
-    
+
         // Update styles after a delay to ensure animation starts
         setTimeout(() => {
             if (isDarkTheme) {
                 chatroom.style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
                 chatroom.style.color = "black";
+                document.querySelector("body").style.background = "rgb(255,255,255)";
             } else {
                 chatroom.style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
                 chatroom.style.color = "white";
+                document.querySelector("body").style.background = "rgb(0,0,0)";
+
             }
-    
+
             // Remove animation class after transition ends
             setTimeout(() => {
                 chatroom.classList.remove('animate-theme');
-    
+
                 // Show other elements
                 otherElements.forEach(element => {
                     element.classList.toggle('hidden');
                 });
-            }, 500); // Adjust delay as needed
+            }, 1300); // Adjust delay as needed
         }, 10); // A small delay to ensure animation class is applied before changing styles
+    }
+
+    function selectAccount(accountId) {
+        id = accountId;
+        konto.textContent = id;
+        updateAccountStatus(id, "take");
+        document.querySelectorAll('.person').forEach(function(person) {
+            person.style.display = 'none';
+        });
+        document.querySelector('.text').style.display = 'flex';
+        chatMessages.style.display = 'block';
+        document.querySelector('.chat h1').textContent = `CZATUJ z osobą ${id === "osoba-1" ? "2" : "1"}`;
+        checkAccountAvailability(accountId);
+    }
+
+    // Event listeners
+    osoba1.addEventListener('click', () => selectAccount("osoba-1"));
+    osoba2.addEventListener('click', () => selectAccount("osoba-2"));
+    document.getElementById('messageForm').addEventListener('submit', sendMessage);
+    document.getElementById('bin').addEventListener('click', clearMessages);
+    konto.addEventListener('click', logoutPopUp);
+    document.getElementById("tak").addEventListener('click', Logout);
+    document.getElementById("nie").addEventListener('click', () => {
+        popup.style.display = "none";
+        chatroom.classList.remove("blur");
     });
+    theme.addEventListener('click', toggleTheme);
+
+    // Additional functionality
+   
+        chatMessages.addEventListener('mouseover', () => {
+            console.log('Mouseover event triggered');
+        });
+     
+    window.addEventListener('beforeunload', function(event) {
+            updateAccountStatus(id, "release");
+            document.getElementById(id).style.display = "flex";
+    });
+
+    // Periodically load messages
+    setInterval(loadMessages, 500);
 });
+
 
