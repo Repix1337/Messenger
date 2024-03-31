@@ -12,23 +12,44 @@ document.addEventListener("DOMContentLoaded", () => {
     let canChangeTheme = true;
     let id;
     let messageID;
+    let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
-    function loadMessages() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "load_messages.php", true);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {   
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                chatMessages.innerHTML = xhr.responseText;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                // Check account availability after loading messages
-                checkAccountAvailability("osoba-1");
-                checkAccountAvailability("osoba-2");            
+ 
+
+    function handleReceivedMessages(messages) {
+        
+        messages.forEach(message => {
+            const { sender, message: messageText, messageID, isloaded } = message;
+            const newMessage = document.createElement('div');
+            newMessage.classList.add('message', sender);
+            newMessage.dataset.isloaded = isloaded; // Ustawienie atrybutu 'data-isloaded'
+            if (sender === id) {
+                newMessage.textContent = `${sender}: ${messageText}`;
+                newMessage.style.float = "right";
+                newMessage.style.textAlign = "right";
+            } else {
+                newMessage.textContent = `${messageText} :${sender}`;
+                newMessage.style.float = "left";
+                newMessage.style.textAlign = "left";
             }
-        };
-        xhr.send();
-    };
-    loadMessages();
+            newMessage.id = messageID;
+            chatMessages.appendChild(newMessage);
+            loadedMessages[messageID] = true;
+        });
+        
+    }
+    
+    function loadMessages() {
+        fetch('load_messages.php')
+            .then(response => response.json())
+            .then(messages => {
+                const messagesToLoad = messages.filter(message => !loadedMessages[message.messageID]);
+                handleReceivedMessages(messagesToLoad);
+                
+            })
+            .catch(error => console.error('Error loading messages:', error));
+    }
+    
 
     function checkAccountAvailability(accountId) {
         var xhr = new XMLHttpRequest();
@@ -37,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 console.log(xhr.responseText);
-
                 var isTaken = JSON.parse(xhr.responseText).istaken;
                 var element = document.getElementById(accountId);
                 if (isTaken) {
@@ -47,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         };
-        var params = "id=" + encodeURIComponent(accountId); // Encode parameter value
+        var params = "id=" + encodeURIComponent(accountId); 
         xhr.send(params);
     }
 
@@ -73,8 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         const messageText = textArea.value;
         const sender = konto.textContent.trim();
-        messageID = Date.now() + Math.random().toString(36).substr(2, 9); // Generate unique messageID
-        // AJAX request to send message
+        messageID = Date.now() + Math.random().toString(36).substr(2, 9); 
         const formData = new FormData();
         formData.append('message', messageText);
         formData.append('sender', sender);
@@ -84,39 +103,38 @@ document.addEventListener("DOMContentLoaded", () => {
         xhr.open("POST", "save_message.php", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                var newMessage = document.createElement('div');
-                if (sender === konto.textContent.trim()) {
-                    newMessage.classList.add('message',id);
-                } else {
-                    newMessage.classList.add('other');
-                }
-                if (sender == "osoba-1") {
-                    newMessage.textContent = sender + ': ' + messageText;
-                    newMessage.style.float = "left";
-                } else if (sender == "osoba-2") {
-                    newMessage.textContent = messageText + ' :' + sender;
-                    newMessage.style.float = "right";
-                }
-                newMessage.setAttribute("id", messageID);
-                let br = document.createElement('br');
-                chatMessages.appendChild(newMessage);
-                chatMessages.appendChild(br);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 textArea.value = '';
                 sendButton.disabled = true;
                 setTimeout(() => {
                     sendButton.disabled = false;
                 }, 800);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         };
         xhr.send(formData);
     }
 
     function clearMessages() {
-        // Functionality to clear messages
-        fetch('save_message.php');
-        loadMessages;
+        fetch('save_message.php', {
+            method: 'POST',
+            body: JSON.stringify({ clearAll: true }), // Dodanie informacji o usuwaniu wszystkich wiadomości
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Usunięto wszystkie wiadomości, więc wyczyść również wyświetlanie wiadomości
+                chatMessages.innerHTML = '';
+            } else {
+                console.error('Error clearing messages:', data.error);
+            }
+        })
+        .catch(error => console.error('Error clearing messages:', error));
     }
+    
 
     function logoutPopUp() {
         if (konto.textContent == "osoba-1" || konto.textContent == "osoba-2") {
@@ -124,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
             chatroom.classList.add("blur");
         }
     }
-    // Event listener for confirming account selection
+
     function Logout(){
         document.querySelector('.text').style.display = 'none';
         chatMessages.style.display = 'none';
@@ -135,9 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
         chatroom.classList.remove("blur");
         popup.style.display = "none";
         document.querySelector('.chat h1').textContent = 'Wybierz konto';
-            updateAccountStatus(id, "release");
-            document.getElementById(id).style.display = "flex";
-    };
+        updateAccountStatus(id, "release");
+        document.getElementById(id).style.display = "flex";
+    }
+
     function ClickMessage(event){
         let mess = event.target;
         if (mess.classList.contains('message') && mess.classList.contains(id)) {
@@ -155,36 +174,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
             xhr.send('messageID=' + encodeURIComponent(messageID))
-            loadMessages;
         }
     }
     
     function toggleTheme() {
-        
-
         if (!canChangeTheme) return;
-
         const chatroom = document.querySelector('.chatroom');
         const otherElements = document.querySelectorAll('.side-menu, .popup,.chat,#theme');
 
-        // Disable the theme button
         canChangeTheme = false;
         setTimeout(() => {
             canChangeTheme = true;
-        }, 1500); // Adjust delay as needed
+        }, 1500);
 
-        // Toggle theme
         isDarkTheme = !isDarkTheme;
-
-        // Add animation class to trigger transition
         chatroom.classList.add('animate-theme');
 
-        // Hide other elements
         otherElements.forEach(element => {
             element.classList.toggle('hidden');
         });
 
-        // Update styles after a delay to ensure animation starts
         setTimeout(() => {
             if (isDarkTheme) {
                 chatroom.style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
@@ -197,21 +206,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
             
-            // Remove animation class after transition ends
             setTimeout(() => {
                 chatroom.classList.remove('animate-theme');
-
-                // Show other elements
                 otherElements.forEach(element => {
                     element.classList.toggle('hidden');
                 });
-            }, 1300); // Adjust delay as needed
-        }, 10); // A small delay to ensure animation class is applied before changing styles
+            }, 1300);
+        }, 10);
     }
-
+    
     function selectAccount(accountId) {
         id = accountId;
         konto.textContent = id;
+        loadMessages();
+        setInterval(loadMessages,500);
         updateAccountStatus(id, "take");
         document.querySelectorAll('.person').forEach(function(person) {
             person.style.display = 'none';
@@ -222,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
         checkAccountAvailability(accountId);
     }
 
-    // Event listeners
     osoba1.addEventListener('click', () => selectAccount("osoba-1"));
     osoba2.addEventListener('click', () => selectAccount("osoba-2"));
     document.getElementById('messageForm').addEventListener('submit', sendMessage);
@@ -235,15 +242,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     theme.addEventListener('click', toggleTheme);
     chatMessages.addEventListener('click', (event) => ClickMessage(event));
-   
      
     window.addEventListener('beforeunload', function(event) {
             updateAccountStatus(id, "release");
             document.getElementById(id).style.display = "flex";
     });
-
-    // Periodically load messages
-        setInterval(loadMessages, 2500);
-    });
-    loadMessages();
-
+    checkAccountAvailability("osoba-1");
+    checkAccountAvailability("osoba-2");
+    function CheckAccount(){
+    checkAccountAvailability("osoba-1");
+    checkAccountAvailability("osoba-2");
+    }
+    setInterval(CheckAccount,500);
+});
