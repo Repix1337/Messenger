@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Elementy interfejsu użytkownika
     const theme = document.getElementById('theme');
     const chatMessages = document.getElementById('chat-messages');
     const textArea = document.getElementById('textarea');
@@ -8,27 +9,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const konto = document.querySelector(".konto");
     const popup = document.getElementById('popup'); 
     const chatroom = document.querySelector('.chatroom');
+    
+    // Zmienne stanu
     let isDarkTheme = false;
     let canChangeTheme = true;
     let id;
     let messageID;
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
- 
-
+    // Funkcje pomocnicze
     function handleReceivedMessages(messages) {
-        
         messages.forEach(message => {
             const { sender, message: messageText, messageID, isloaded } = message;
             const newMessage = document.createElement('div');
             newMessage.classList.add('message', sender);
             newMessage.dataset.isloaded = isloaded; // Ustawienie atrybutu 'data-isloaded'
-            if (sender === id) {
-                newMessage.textContent = `${sender}: ${messageText}`;
+            if (sender === konto.textContent.trim()) {
+                newMessage.textContent = `${messageText} :${sender}`;
                 newMessage.style.float = "right";
                 newMessage.style.textAlign = "right";
             } else {
-                newMessage.textContent = `${messageText} :${sender}`;
+                newMessage.textContent = `${sender} :${messageText}`;
                 newMessage.style.float = "left";
                 newMessage.style.textAlign = "left";
             }
@@ -36,20 +37,19 @@ document.addEventListener("DOMContentLoaded", () => {
             chatMessages.appendChild(newMessage);
             loadedMessages[messageID] = true;
         });
-        
     }
     
     function loadMessages() {
-        fetch('load_messages.php')
-            .then(response => response.json())
-            .then(messages => {
-                const messagesToLoad = messages.filter(message => !loadedMessages[message.messageID]);
-                handleReceivedMessages(messagesToLoad);
-                
-            })
-            .catch(error => console.error('Error loading messages:', error));
+        if (konto.textContent.trim() != "Niezalogowany") {
+            fetch('load_messages.php')
+                .then(response => response.json())
+                .then(messages => {
+                    const messagesToLoad = messages.filter(message => !loadedMessages[message.messageID]);
+                    handleReceivedMessages(messagesToLoad);
+                })
+                .catch(error => console.error('Error loading messages:', error));
+        }
     }
-    
 
     function checkAccountAvailability(accountId) {
         var xhr = new XMLHttpRequest();
@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                console.log(xhr.responseText);
                 var isTaken = JSON.parse(xhr.responseText).istaken;
                 var element = document.getElementById(accountId);
                 if (isTaken) {
@@ -104,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-                textArea.value = '';
+                textArea.value = ''; // Wyczyszczenie pola tekstowego po wysłaniu wiadomości
                 sendButton.disabled = true;
                 setTimeout(() => {
                     sendButton.disabled = false;
@@ -134,7 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error('Error clearing messages:', error));
     }
-    
 
     function logoutPopUp() {
         if (konto.textContent == "osoba-1" || konto.textContent == "osoba-2") {
@@ -155,6 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('.chat h1').textContent = 'Wybierz konto';
         updateAccountStatus(id, "release");
         document.getElementById(id).style.display = "flex";
+        loadedMessages = {};
+        chatMessages.innerHTML = '';
     }
 
     function ClickMessage(event){
@@ -177,9 +177,50 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     
+    function selectAccount(accountId) {
+        id = accountId;
+        konto.textContent = id;
+        loadMessages();
+        setInterval(loadMessages,500);
+        updateAccountStatus(id, "take");
+        document.querySelectorAll('.person').forEach(function(person) {
+            person.style.display = 'none';
+        });
+        document.querySelector('.text').style.display = 'flex';
+        chatMessages.style.display = 'block';
+        document.querySelector('.chat h1').textContent = `CZATUJ z osobą ${id === "osoba-1" ? "2" : "1"}`;
+        checkAccountAvailability(accountId);
+    }
+
+    // Nasłuchiwacze zdarzeń
+    osoba1.addEventListener('click', () => selectAccount("osoba-1"));
+    osoba2.addEventListener('click', () => selectAccount("osoba-2"));
+    document.getElementById('messageForm').addEventListener('submit', sendMessage);
+    document.getElementById('bin').addEventListener('click', clearMessages);
+    konto.addEventListener('click', logoutPopUp);
+    document.getElementById("tak").addEventListener('click', Logout);
+    document.getElementById("nie").addEventListener('click', () => {
+        popup.style.display = "none";
+        chatroom.classList.remove("blur");
+    });
+    theme.addEventListener('click', toggleTheme);
+    chatMessages.addEventListener('click', (event) => ClickMessage(event));
+     
+    window.addEventListener('beforeunload', function(event) {
+        updateAccountStatus(id, "release");
+        document.getElementById(id).style.display = "flex";
+    });
+
+    // Sprawdzanie dostępności kont
+    function CheckAccount(){
+        checkAccountAvailability("osoba-1");
+        checkAccountAvailability("osoba-2");
+    }
+    setInterval(CheckAccount,500);
+
+    // Przełączanie motywu
     function toggleTheme() {
         if (!canChangeTheme) return;
-        const chatroom = document.querySelector('.chatroom');
         const otherElements = document.querySelectorAll('.side-menu, .popup,.chat,#theme');
 
         canChangeTheme = false;
@@ -203,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 chatroom.style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
                 chatroom.style.color = "white";
                 document.querySelector("body").style.background = "rgb(0,0,0)";
-
             }
             
             setTimeout(() => {
@@ -214,44 +254,4 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 1300);
         }, 10);
     }
-    
-    function selectAccount(accountId) {
-        id = accountId;
-        konto.textContent = id;
-        loadMessages();
-        setInterval(loadMessages,500);
-        updateAccountStatus(id, "take");
-        document.querySelectorAll('.person').forEach(function(person) {
-            person.style.display = 'none';
-        });
-        document.querySelector('.text').style.display = 'flex';
-        chatMessages.style.display = 'block';
-        document.querySelector('.chat h1').textContent = `CZATUJ z osobą ${id === "osoba-1" ? "2" : "1"}`;
-        checkAccountAvailability(accountId);
-    }
-
-    osoba1.addEventListener('click', () => selectAccount("osoba-1"));
-    osoba2.addEventListener('click', () => selectAccount("osoba-2"));
-    document.getElementById('messageForm').addEventListener('submit', sendMessage);
-    document.getElementById('bin').addEventListener('click', clearMessages);
-    konto.addEventListener('click', logoutPopUp);
-    document.getElementById("tak").addEventListener('click', Logout);
-    document.getElementById("nie").addEventListener('click', () => {
-        popup.style.display = "none";
-        chatroom.classList.remove("blur");
-    });
-    theme.addEventListener('click', toggleTheme);
-    chatMessages.addEventListener('click', (event) => ClickMessage(event));
-     
-    window.addEventListener('beforeunload', function(event) {
-            updateAccountStatus(id, "release");
-            document.getElementById(id).style.display = "flex";
-    });
-    checkAccountAvailability("osoba-1");
-    checkAccountAvailability("osoba-2");
-    function CheckAccount(){
-    checkAccountAvailability("osoba-1");
-    checkAccountAvailability("osoba-2");
-    }
-    setInterval(CheckAccount,500);
 });
