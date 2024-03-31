@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const osoba2 = document.getElementById('osoba-2');
     const konto = document.querySelector(".konto");
     const popup = document.getElementById('popup'); 
+    const MessageMenu = document.getElementById('MessageMenu'); 
     const chatroom = document.querySelector('.chatroom');
     
     // Zmienne stanu
@@ -156,8 +157,20 @@ document.addEventListener("DOMContentLoaded", () => {
         loadedMessages = {};
         chatMessages.innerHTML = '';
     }
-
     function ClickMessage(event){
+        let mess = event.target;
+        if (mess.classList.contains('message') && mess.classList.contains(id)) {
+            let messageID = mess.id;
+            MessageMenu.style.backgroundColor = 'rgba(255,0,0, 0.3)';
+            MessageMenu.style.border = '1px solid black';
+            MessageMenu.style.position = 'absolute';
+            MessageMenu.style.zIndex = '100';
+            MessageMenu.style.padding = '10px';
+            MessageMenu.style.display = 'block';
+            mess.append(MessageMenu);
+        }}
+        
+    function DeleteSpecificMessage(event){
         let mess = event.target;
         if (mess.classList.contains('message') && mess.classList.contains(id)) {
             let messageID = mess.id;
@@ -205,6 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     theme.addEventListener('click', toggleTheme);
     chatMessages.addEventListener('click', (event) => ClickMessage(event));
+    MessageMenu.addEventListener('mouseout', () => {
+        MessageMenu.style.display = 'none';
+    });
      
     window.addEventListener('beforeunload', function(event) {
         updateAccountStatus(id, "release");

@@ -143,6 +143,10 @@ h1 {
     padding: 10px;
     color: white;
 }
+.MessageMenu{
+    display: none;
+    color: white;
+}
 .popup-wybor{
     display: flex;
     justify-content: space-around;
