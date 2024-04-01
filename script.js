@@ -10,12 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const popup = document.getElementById('popup'); 
     const MessageMenu = document.getElementById('MessageMenu'); 
     const chatroom = document.querySelector('.chatroom');
+    const DeleteMessageButton = document.getElementById('DeleteMessageButton');
     
     // Zmienne stanu
     let isDarkTheme = false;
     let canChangeTheme = true;
     let id;
-    let messageID;
+    
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
     // Funkcje pomocnicze
@@ -157,37 +158,36 @@ document.addEventListener("DOMContentLoaded", () => {
         loadedMessages = {};
         chatMessages.innerHTML = '';
     }
+
+    let messageID;
+
     function ClickMessage(event){
         let mess = event.target;
         if (mess.classList.contains('message') && mess.classList.contains(id)) {
-            let messageID = mess.id;
-            MessageMenu.style.backgroundColor = 'rgba(255,0,0, 0.3)';
-            MessageMenu.style.border = '1px solid black';
-            MessageMenu.style.position = 'absolute';
-            MessageMenu.style.zIndex = '100';
-            MessageMenu.style.padding = '10px';
-            MessageMenu.style.display = 'block';
+            messageID = mess.id;
+            console.log(messageID)
+            MessageMenu.style.display = 'flex';
+            MessageMenu.style.justifyContent = 'space-between';
             mess.append(MessageMenu);
-        }}
-        
-    function DeleteSpecificMessage(event){
-        let mess = event.target;
-        if (mess.classList.contains('message') && mess.classList.contains(id)) {
-            let messageID = mess.id;
-            let xhr = new XMLHttpRequest();
-            xhr.open('POST', 'delete_message.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        mess.remove();
-                    } else {
-                        console.error('Error deleting message');
-                    }
-                }
-            };
-            xhr.send('messageID=' + encodeURIComponent(messageID))
+            return messageID;
         }
+    }
+        
+    function DeleteSpecificMessage() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'delete_message.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    document.getElementById(messageID).remove();
+                    MessageMenu.style.display = 'none'; // Hide menu after deletion
+                } else {
+                    console.error('Error deleting message');
+                }
+            }
+        };
+        xhr.send('messageID=' + encodeURIComponent(messageID));
     }
     
     function selectAccount(accountId) {
@@ -218,7 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     theme.addEventListener('click', toggleTheme);
     chatMessages.addEventListener('click', (event) => ClickMessage(event));
-    MessageMenu.addEventListener('mouseout', () => {
+    DeleteMessageButton.addEventListener('click', DeleteSpecificMessage);
+    MessageMenu.addEventListener('mouseleave', () => {
         MessageMenu.style.display = 'none';
     });
      

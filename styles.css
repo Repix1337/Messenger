@@ -85,7 +85,7 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    overflow-y: auto;
+   
     background-color: rgba(0,0,0, 0.3);
 }
 
@@ -95,6 +95,7 @@ h1 {
     align-items: center;
 }
 #chat-messages {
+    position: relative; /* Ensure relative positioning */
     font-size: x-large;
     display: none;
     width: 100%;
@@ -104,7 +105,6 @@ h1 {
     scrollbar-color: #888 #333;
     scrollbar-width: thin;
 }
-
 
 
 .text {
@@ -143,9 +143,21 @@ h1 {
     padding: 10px;
     color: white;
 }
-.MessageMenu{
+#MessageMenu {
+    background-color: rgb(71, 71, 71);
+    border: 1px solid black;
+    border-radius: 10px;
+    position: absolute; 
+    bottom: 35px; 
+    right: 0;
+    width: 200px;
+    z-index: 9999;
+    padding: 10px;
     display: none;
     color: white;
+}
+#DeleteMessageButton{
+    cursor: pointer;
 }
 .popup-wybor{
     display: flex;
@@ -176,4 +188,6 @@ h1 {
 .message.osoba-1, .message.osoba-2{
     width: 100%;
     word-wrap: break-word;
+    position: relative;
+    padding: 5px;
 }
