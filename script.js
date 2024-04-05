@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatMessages = document.getElementById('chat-messages');
     const textArea = document.getElementById('textarea');
     const sendButton = document.getElementById('send');
-    const osoba1 = document.getElementById('osoba-1');
-    const osoba2 = document.getElementById('osoba-2');
     const konto = document.querySelector(".konto");
     const popup = document.getElementById('popup'); 
     const MessageMenu = document.getElementById('MessageMenu'); 
@@ -137,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function logoutPopUp() {
-        if (konto.textContent == "osoba-1" || konto.textContent == "osoba-2") {
+        if (konto.textContent.trim() != "Niezalogowany") {
             popup.style.display = "block";
             chatroom.classList.add("blur");
         }
@@ -201,13 +199,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         document.querySelector('.text').style.display = 'flex';
         chatMessages.style.display = 'block';
-        document.querySelector('.chat h1').textContent = `CZATUJ z osobą ${id === "osoba-1" ? "2" : "1"}`;
+        document.querySelector('.chat h1').textContent = 'Chatuj';
         checkAccountAvailability(accountId);
     }
 
     // Nasłuchiwacze zdarzeń
-    osoba1.addEventListener('click', () => selectAccount("osoba-1"));
-    osoba2.addEventListener('click', () => selectAccount("osoba-2"));
+    document.querySelectorAll('.person').forEach(person => {
+        let personID = person.id
+        person.addEventListener('click', () => selectAccount(personID));
+    });
     document.getElementById('messageForm').addEventListener('submit', sendMessage);
     document.getElementById('bin').addEventListener('click', clearMessages);
     konto.addEventListener('click', logoutPopUp);
@@ -230,8 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Sprawdzanie dostępności kont
     function CheckAccount(){
-        checkAccountAvailability("osoba-1");
-        checkAccountAvailability("osoba-2");
+        document.querySelectorAll('.person').forEach(person => {
+            let personID = person.id
+            checkAccountAvailability(personID);
+        } )
     }
     setInterval(CheckAccount,500);
 
