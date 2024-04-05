@@ -138,21 +138,7 @@ h1 {
     padding: 10px;
     color: white;
 }
-#MessageMenu {
-    background-color: rgb(71, 71, 71);
-    border: 1px solid black;
-    border-radius: 10px;
-    position: fixed; 
-    right: 0;
-    width: 200px;
-    z-index: 9999;
-    padding: 10px;
-    display: none;
-    color: white;
-}
-#DeleteMessageButton{
-    cursor: pointer;
-}
+
 .popup-wybor{
     display: flex;
     justify-content: space-around;
@@ -184,4 +170,20 @@ h1 {
     word-wrap: break-word;
     position: relative;
     padding: 5px;
+}
+#MessageMenu {
+    background-color: rgb(71, 71, 71);
+    border: 1px solid black;
+    border-radius: 10px;
+    position: fixed; 
+    right: 0;
+    
+    width: 200px;
+    z-index: 9999;
+    padding: 10px;
+    display: none;
+    color: white;
+}
+#DeleteMessageButton{
+    cursor: pointer;
 }

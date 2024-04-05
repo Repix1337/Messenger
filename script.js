@@ -17,25 +17,51 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
-    // Funkcje pomocnicze
     function handleReceivedMessages(messages) {
+        // Store IDs of messages to be removed
+        const messagesToRemove = [];
+
+        // Loop through loaded messages
+        Object.keys(loadedMessages).forEach(messageID => {
+            // Check if the message ID is not present in the received messages
+            if (!messages.some(message => message.messageID === messageID)) {
+                // Add the message ID to the list of messages to remove
+                messagesToRemove.push(messageID);
+            }
+        });
+
+        // Remove messages from DOM
+        messagesToRemove.forEach(messageID => {
+            const messageToRemove = document.getElementById(messageID);
+            if (messageToRemove) {
+                messageToRemove.remove();
+                // Remove from loadedMessages object as well
+                delete loadedMessages[messageID];
+            }
+        });
+
+        // Add new messages to DOM
         messages.forEach(message => {
             const { sender, message: messageText, messageID, isloaded } = message;
-            const newMessage = document.createElement('div');
-            newMessage.classList.add('message', sender);
-            newMessage.dataset.isloaded = isloaded; // Ustawienie atrybutu 'data-isloaded'
-            if (sender === konto.textContent.trim()) {
-                newMessage.textContent = `${messageText} :${sender}`;
-                newMessage.style.float = "right";
-                newMessage.style.textAlign = "right";
-            } else {
-                newMessage.textContent = `${sender} :${messageText}`;
-                newMessage.style.float = "left";
-                newMessage.style.textAlign = "left";
+
+            // Check if message is not already loaded
+            if (!loadedMessages[messageID]) {
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message', sender);
+                newMessage.dataset.isloaded = isloaded; // Set 'data-isloaded' attribute
+                if (sender === konto.textContent.trim()) {
+                    newMessage.textContent = `${messageText} :${sender}`;
+                    newMessage.style.float = "right";
+                    newMessage.style.textAlign = "right";
+                } else {
+                    newMessage.textContent = `${sender} :${messageText}`;
+                    newMessage.style.float = "left";
+                    newMessage.style.textAlign = "left";
+                }
+                newMessage.id = messageID;
+                chatMessages.appendChild(newMessage);
+                loadedMessages[messageID] = true;
             }
-            newMessage.id = messageID;
-            chatMessages.appendChild(newMessage);
-            loadedMessages[messageID] = true;
         });
     }
     
@@ -44,8 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch('load_messages.php')
                 .then(response => response.json())
                 .then(messages => {
-                    const messagesToLoad = messages.filter(message => !loadedMessages[message.messageID]);
-                    handleReceivedMessages(messagesToLoad);
+                    handleReceivedMessages(messages);
                 })
                 .catch(error => console.error('Error loading messages:', error));
         }
@@ -180,6 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (xhr.status === 200) {
                     document.getElementById(messageID).remove();
                     MessageMenu.style.display = 'none'; // Hide menu after deletion
+                    loadedMessages[messageID] = false;
+                    
                 } else {
                     console.error('Error deleting message');
                 }
