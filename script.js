@@ -9,12 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const MessageMenu = document.getElementById('MessageMenu'); 
     const chatroom = document.querySelector('.chatroom');
     const DeleteMessageButton = document.getElementById('DeleteMessageButton');
+    const EditMessageButton = document.getElementById('EditMessageButton');
     
     // Zmienne stanu
     let isDarkTheme = false;
     let canChangeTheme = true;
     let id;
-    
+    let YourMessage
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
     function handleReceivedMessages(messages) {
@@ -46,20 +47,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Check if message is not already loaded
             if (!loadedMessages[messageID]) {
+                const newMessageLine = document.createElement('div');
                 const newMessage = document.createElement('div');
-                newMessage.classList.add('message', sender);
+                const newMessageText = document.createElement('div');
+                const newMessageSender = document.createElement('div');
+                newMessageLine.style.width = "100%";
+                newMessageLine.style.marginTop = "5px";
+                newMessage.style.width = "300px";
+                newMessage.classList.add('message', messageID);
                 newMessage.dataset.isloaded = isloaded; // Set 'data-isloaded' attribute
                 if (sender === konto.textContent.trim()) {
-                    newMessage.textContent = `${messageText} :${sender}`;
-                    newMessage.style.float = "right";
+                    newMessageSender.textContent = `${sender}: `;
+                    newMessageText.textContent = `${messageText} `;
+                    newMessage.style.float = "right"; 
                     newMessage.style.textAlign = "right";
+                    newMessage.style.backgroundColor = "rgb(32, 14, 107)";
+                    newMessage.style.marginRight = "2rem";
+                    newMessageText.classList.add("MyMessage");
                 } else {
-                    newMessage.textContent = `${sender} :${messageText}`;
+                    newMessageSender.textContent = `${sender}: `;
+                    newMessageText.textContent = `${messageText} `;
                     newMessage.style.float = "left";
                     newMessage.style.textAlign = "left";
+                    newMessage.style.marginLeft = "2rem";
+                    newMessage.appendChild(newMessageSender);
                 }
-                newMessage.id = messageID;
-                chatMessages.appendChild(newMessage);
+                newMessageText.id = messageID;
+                chatMessages.appendChild(newMessageLine);
+                newMessageLine.appendChild(newMessage);
+                newMessage.appendChild(newMessageText);
+                newMessageText.classList.add(messageID);
+                newMessageLine.classList.add(messageID);
+                newMessage.classList.add(messageID);
+                newMessageSender.classList.add(messageID);
+                const newMessageHeight = newMessage.offsetHeight;
+                newMessageLine.style.height = newMessageHeight + "px";
                 loadedMessages[messageID] = true;
             }
         });
@@ -124,6 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append('messageID', messageID);
 
         const xhr = new XMLHttpRequest();
+        if (textArea.value != '')
+        {
         xhr.open("POST", "save_message.php", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
@@ -137,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
         xhr.send(formData);
-    }
+    }}
 
     function clearMessages() {
         fetch('save_message.php', {
@@ -183,18 +207,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let messageID;
+    let messageText;
 
     function ClickMessage(event){
         let mess = event.target;
-        if (mess.classList.contains('message') && mess.classList.contains(id)) {
+        if (mess.classList.contains(mess.id) && mess.classList.contains("MyMessage")) {
             messageID = mess.id;
+            messageText = mess.textContent;
             console.log(messageID)
-            MessageMenu.style.display = 'flex';
-            MessageMenu.style.justifyContent = 'space-between';
+            MessageMenu.style.display = 'block';
             mess.append(MessageMenu);
             return messageID;
         }
     }
+    function EditMessage(){
+            textArea.value = messageText;
+            MessageMenu.style.display = 'none'; 
+        }
+    
         
     function DeleteSpecificMessage() {
         let xhr = new XMLHttpRequest();
@@ -203,7 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
-                    document.getElementById(messageID).remove();
+                    document.querySelectorAll('[class*="' + messageID + '"]').forEach(element => {
+                        element.remove();
+                    });
                     MessageMenu.style.display = 'none'; // Hide menu after deletion
                     loadedMessages[messageID] = false;
                     
@@ -246,6 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     theme.addEventListener('click', toggleTheme);
     chatMessages.addEventListener('click', (event) => ClickMessage(event));
     DeleteMessageButton.addEventListener('click', DeleteSpecificMessage);
+    EditMessageButton.addEventListener('click', EditMessage);
     MessageMenu.addEventListener('mouseleave', () => {
         MessageMenu.style.display = 'none';
     });

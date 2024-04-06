@@ -42,7 +42,7 @@ body {
 .side-menu {
     border-right: 3px solid black;
     height: 100vh;
-    width: 30%;
+    width: 20%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,8 +52,9 @@ body {
 
 .person {
     margin: 30px;
-    border: 1px solid;
-    border-radius: 10px;
+    background-color: rgba(0,0,0, 0.3);
+    border: 2px solid white;
+    border-radius: 20px;
     width: 90%;
     height: 5vh;
     display: flex;
@@ -76,7 +77,7 @@ body {
 
 .chat {
     height: 100vh;
-    width: 70%;
+    width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -106,12 +107,19 @@ h1 {
     display: none;
     flex-direction: row;
     justify-content: center;
+    margin-bottom: 5px;
 }
 
 #textarea {
     width: 50vh;
     height: 4vh;
+    color: white;
+    background-color: rgba(0,0,0, 0.3);
+    border: 1px solid rgba(0,0,0, 0.3);
     border-radius: 15px;
+}
+#textarea:focus{
+    outline: rgb(73, 72, 72);
 }
 #reset-button{
  display: flex;
@@ -125,7 +133,18 @@ h1 {
 }
 #send{
     cursor: pointer;
+    background-color: rgba(0,0,0, 0.3);
+    border: 1px solid black;
+    color: white;
+    padding: 10px;
+    font-size: large;
+    border-radius: 10px;
 }
+#send:hover{
+    background-color: rgba(86, 5, 161, 0.863);
+    transition: background-color 0.3s ;
+}
+
 .popup{
     display: none;
     top: 50%;
@@ -166,23 +185,28 @@ h1 {
     border: 3px solid #333;
   }
 .message{
-    width: 100%;
+    background-color: rgba(0,0,0, 0.3);
+    border: 1.5px solid white;
     word-wrap: break-word;
     position: relative;
     padding: 5px;
+    border-radius: 10px;
+    
 }
 #MessageMenu {
     background-color: rgb(71, 71, 71);
     border: 1px solid black;
     border-radius: 10px;
-    position: fixed; 
+    position: absolute; 
     right: 0;
-    
+    top: 30px;
     width: 200px;
     z-index: 9999;
     padding: 10px;
     display: none;
     color: white;
+    text-align: left;
+    padding: 5px;
 }
 #DeleteMessageButton{
     cursor: pointer;
