@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 newMessageText.classList.add(messageID);
                 newMessageLine.classList.add(messageID);
                 newMessage.classList.add(messageID);
+                newMessageText.id = messageID;
                 newMessageSender.classList.add(messageID);
                 const newMessageHeight = newMessage.offsetHeight;
                 newMessageLine.style.height = newMessageHeight + "px";
@@ -221,11 +222,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     function EditMessage(){
-            textArea.value = messageText;
+            textArea.value = document.getElementById(messageID).textContent;
             MessageMenu.style.display = 'none'; 
-        }
-    
-        
+        }  
     function DeleteSpecificMessage() {
         let xhr = new XMLHttpRequest();
         xhr.open('POST', 'delete_message.php', true);
