@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isDarkTheme = false;
     let canChangeTheme = true;
     let id;
+    let messageID;
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
     function handleReceivedMessages(messages) {
@@ -235,10 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadedMessages = {};
         chatMessages.innerHTML = '';
     }
-
-    let messageID;
-    let messageText;
-
     function ClickMessage(event){
         let mess = event.target;
         if (mess.classList.contains(mess.id) && mess.classList.contains("MyMessage")) {

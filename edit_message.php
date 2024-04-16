@@ -5,14 +5,10 @@ header('Content-Type: application/json');
 $messages = file_get_contents('messages.json');
 $messagesArray = json_decode($messages, true);
 
-// Decode JSON data from the POST request
-$postData = json_decode(file_get_contents("php://input"), true);
-
 // Check if message and sender are set in the POST data
-if (isset($postData['message']) && isset($postData['sender']) && isset($postData['messageID'])) {
-    $message = $postData['message'];
-    $sender = $postData['sender'];
-    $messageID = $postData['messageID'];
+if (isset($_POST['message']) && isset($_POST['messageID'])) {
+    $message = $_POST['message'];
+    $messageID = $_POST['messageID'];
 
     // Loop through messages to find the one with matching messageID
     foreach ($messagesArray as &$messageItem) {
