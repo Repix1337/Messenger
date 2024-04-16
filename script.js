@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let isDarkTheme = false;
     let canChangeTheme = true;
     let id;
-    let YourMessage
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
     function handleReceivedMessages(messages) {
@@ -138,6 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function sendMessage(event) {
         event.preventDefault();
+        console.log(canEdit);
+        if (canEdit == false){
         const messageText = textArea.value;
         const sender = konto.textContent.trim();
         messageID = Date.now() + Math.random().toString(36).substr(2, 9); 
@@ -159,10 +160,38 @@ document.addEventListener("DOMContentLoaded", () => {
                     sendButton.disabled = false;
                 }, 800);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+        }};
+        xhr.send(formData);
+    }}
+    else{
+        canEdit = false;
+        const message = textArea.value;
+        const sender = konto.textContent.trim();
+        const formData = new FormData();
+        console.log(messageID);
+        formData.append('message', message);
+        formData.append('sender', sender);
+        formData.append('messageID', messageID);
+        const xhr = new XMLHttpRequest();
+        if (textArea.value != '')
+        {
+        document.getElementById(messageID).textContent = textArea.value;
+        xhr.open("POST", "edit_message.php", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                textArea.value = ''; // Wyczyszczenie pola tekstowego po wysłaniu wiadomości
+                sendButton.disabled = true;
+                setTimeout(() => {
+                    sendButton.disabled = false;
+                }, 800);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         };
         xhr.send(formData);
     }}
+}
 
     function clearMessages() {
         fetch('save_message.php', {
@@ -221,9 +250,19 @@ document.addEventListener("DOMContentLoaded", () => {
             return messageID;
         }
     }
+    let canEdit = false;
     function EditMessage(){
-            textArea.value = document.getElementById(messageID).textContent;
-            MessageMenu.style.display = 'none'; 
+var parentElement = document.getElementById(messageID);
+var parentTextContent = "";
+for (var i = 0; i < parentElement.childNodes.length; i++) {
+    var childNode = parentElement.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+        parentTextContent += childNode.textContent;
+    }
+}
+textArea.value = parentTextContent.trim();
+MessageMenu.style.display = 'none'; 
+canEdit = true;
         }  
     function DeleteSpecificMessage() {
         let xhr = new XMLHttpRequest();
