@@ -111,6 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const newMessageHeight = newMessage.offsetHeight;
                 newMessageLine.style.height = newMessageHeight + "px";
                 loadedMessages[messageID] = true;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
             }
         });
     }
