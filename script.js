@@ -21,16 +21,43 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleReceivedMessages(messages) {
         // Store IDs of messages to be removed
         const messagesToRemove = [];
-
+    
         // Loop through loaded messages
         Object.keys(loadedMessages).forEach(messageID => {
+            // Find the corresponding message in the received messages array
+            const receivedMessage = messages.find(message => message.messageID === messageID);
+    
             // Check if the message ID is not present in the received messages
-            if (!messages.some(message => message.messageID === messageID)) {
+            if (!receivedMessage) {
                 // Add the message ID to the list of messages to remove
                 messagesToRemove.push(messageID);
-            }
-        });
-
+            } else {
+                // Check if the message content is different
+                if (loadedMessages[messageID] !== receivedMessage.message) {
+                    // Get the parent element
+                    const parentElement = document.getElementById(messageID);
+                
+                    // Get the text content of the parent element and its children
+                    let parentTextContent = "";
+                    for (let i = 0; i < parentElement.childNodes.length; i++) {
+                        const childNode = parentElement.childNodes[i];
+                        if (childNode.nodeType === Node.TEXT_NODE) {
+                            parentTextContent += childNode.textContent;
+                        }
+                    }
+                
+                    // Check if the text content of the parent element is different
+                    if (parentTextContent !== receivedMessage.message) {
+                        // Update the message content in the DOM
+                        const messageToUpdate = document.getElementById(messageID);
+                        if (messageToUpdate) {
+                            messageToUpdate.textContent = receivedMessage.message;
+                        }
+                    }
+                }
+            }});
+                
+    
         // Remove messages from DOM
         messagesToRemove.forEach(messageID => {
             const messageToRemove = document.getElementById(messageID);
@@ -40,11 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 delete loadedMessages[messageID];
             }
         });
-
+    
         // Add new messages to DOM
         messages.forEach(message => {
             const { sender, message: messageText, messageID, isloaded } = message;
-
+    
             // Check if message is not already loaded
             if (!loadedMessages[messageID]) {
                 const newMessageLine = document.createElement('div');
@@ -87,7 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
     function loadMessages() {
         if (konto.textContent.trim() != "Niezalogowany") {
             fetch('load_messages.php')
@@ -98,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .catch(error => console.error('Error loading messages:', error));
         }
     }
+    
 
     function checkAccountAvailability(accountId) {
         var xhr = new XMLHttpRequest();
