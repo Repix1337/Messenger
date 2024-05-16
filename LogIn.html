@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="Login/LogInStyles.css">
+</head>
+<body>
+    <div class="container">
+        <form id="LoginForm" action="Login/login.php" method="POST">
+            <div id="LoginContent">
+                <h1>Zaloguj sie</h1>
+                <div class="input-container">
+                    <label for="login">Login:</label>
+                    <input id="login" type="text" name="login">
+                </div>
+                <div class="input-container">
+                    <label for="password">Password:</label>
+                    <input id="password" type="password" name="password">
+                </div>
+                <button id="loginButton" type="submit">Login</button>
+                <div class="SwapButton">Register</div>
+            </div>
+            </form>
+            <form id="registrationForm" action="Login/register.php" method="POST">
+            <div id="RegisterContent">
+                <h1>Zarejestruj sie</h1>
+                <div class="input-container">
+                    <label for="login-register">Login:</label>
+                    <input id="login-register" type="text" name="login-register" required>
+                </div>
+                <div class="input-container">
+                    <label for="password-register">Password:</label>
+                    <input id="password-register" type="password" name="password-register" required>
+                </div>
+                <div class="input-container">
+                    <label for="repeat-password">Repeat Password:</label>
+                    <input id="repeat-password" type="password" name="repeat-password" required>
+                </div>
+                <button id="RegisterButton" type="submit">Register</button>
+                <div class="SwapButton">Login</div>
+            </div>
+        </form>
+    </div>
+    <script src="Login/script.js"></script>
+</body>
+</html>

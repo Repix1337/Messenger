@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Main/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Document</title>
 </head>
@@ -16,37 +16,31 @@
             <div id="tak">Tak</div>
             <div id="nie">Nie</div>
         </div>
-      </div>
+    </div>
     
     <div class="chatroom">
         <div id="theme">Swap Theme</div>
         <div class="side-menu">
-            <div class="person" id="osoba-1">Osoba 1</div>
-            <div class="person" id="osoba-2">Osoba 2</div>
-            <div class="person" id="osoba-3">Osoba 3</div>
-            <div class="person" id="osoba-4">Osoba 4</div>
-            <div class="konto">Niezalogowany</div>
+            <div class="konto"><a href="LogIn.html" id="accountLink">Zaloguj sie</a></div>
         </div>
         <div class="chat">
-            <h1>Wybierz Konto</h1>
-            <div id="chat-messages">
+            <h1 id="chatTitle">Wybierz Konto</h1>
+            <div id="chat-messages" style="display: none;">
                 <div id="MessageMenu">
-                    <div id="DeleteMessageButton">Skasuj </div>
-                    <div id="EditMessageButton">Edytuj </div>
+                    <div id="DeleteMessageButton">Skasuj</div>
+                    <div id="EditMessageButton">Edytuj</div>
                     <div>nwm</div>
                 </div>
-                
             </div>
-            <div class="text">
-                <div id="reset-button"><img src="bin.png" id="bin">
-                </div>
+            <div class="text" style="display: none;">
                 <form id="messageForm">
+                <img src="Main/bin.png" id="reset-button">
                 <input type="text" id="textarea" autocomplete="off">
                 <input type="submit" id="send" value="Send">
                 </form>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="Main/script.js"></script>
 </body>
 </html>

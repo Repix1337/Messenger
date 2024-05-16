@@ -1,0 +1,207 @@
+body {
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    background-color: black;
+    overflow: hidden;
+
+    
+}
+@keyframes backgroundChange {
+    0% {
+        background-color: rgba(0, 0, 0, 0);
+        transform: scale(5);
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0.3); 
+        transform: scale(1); 
+
+    }
+}
+
+.chatroom {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    color: white;
+    background: radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%);
+    backdrop-filter: blur(5px);
+    animation: none; 
+
+}
+
+.animate-theme {
+    animation: backgroundChange 1.2s cubic-bezier(.28,1.12,1,1.2) forwards; 
+    transition: color 0.5s ease;
+}
+.hidden {
+    display: none !important;
+}
+
+.side-menu {
+    border-right: 3px solid black;
+    height: 100vh;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden
+    
+}
+.konto {
+    margin: 30px;
+    background-color: rgba(0,0,0, 0.3);
+    border: 2px solid white;
+    border-radius: 20px;
+    width: 90%;
+    height: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 50px;
+    text-align: center;
+}
+a{
+    all: unset;
+}
+.konto:hover{
+    color: red;
+}
+
+
+.chat {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0,0,0, 0.3);
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#chat-messages {
+    position: static; /* Ensure relative positioning */
+    font-size: x-large;
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-color: #888 #333;
+    scrollbar-width: thin;
+}
+
+
+.text {
+    display: none;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 5px;
+    width: 30rem;
+}
+
+#textarea {
+    width: 50vh;
+    height: 4vh;
+    color: white;
+    background-color: rgba(0,0,0, 0.3);
+    border: 1px solid rgba(0,0,0, 0.3);
+    border-radius: 15px;
+}
+#textarea:focus{
+    outline: rgb(73, 72, 72);
+}
+
+#reset-button{
+    margin-bottom: -10px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+#send{
+    cursor: pointer;
+    background-color: rgba(0,0,0, 0.3);
+    border: 1px solid black;
+    color: white;
+    padding: 10px;
+    font-size: large;
+    border-radius: 10px;
+}
+#send:hover{
+    background-color: rgba(86, 5, 161, 0.863);
+    transition: background-color 0.3s ;
+}
+
+.popup{
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0,0,0, 0.3);
+    border: 1px solid black;
+    position: fixed;
+    z-index: 100;
+    padding: 10px;
+    color: white;
+}
+
+.popup-wybor{
+    display: flex;
+    justify-content: space-around;
+    
+}
+.blur {
+    filter: blur(5px);
+  }
+#theme{
+    right: 0%;
+    position: fixed;
+    cursor:pointer;
+}
+#chatmessages::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  #chatmessages::-webkit-scrollbar-track {
+    background: #333;
+  }
+  
+  #chatmessages::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 20px;
+    border: 3px solid #333;
+  }
+.message{
+    background-color: rgba(0,0,0, 0.3);
+    border: 1.5px solid white;
+    word-wrap: break-word;
+    position: relative;
+    padding: 5px;
+    border-radius: 10px;
+    
+}
+#MessageMenu {
+    background-color: rgb(71, 71, 71);
+    border: 1px solid black;
+    border-radius: 10px;
+    position: absolute; 
+    right: 0;
+    top: 30px;
+    width: 200px;
+    z-index: 9999;
+    padding: 10px;
+    display: none;
+    color: white;
+    text-align: left;
+    padding: 5px;
+}
+#DeleteMessageButton{
+    cursor: pointer;
+}
