@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <form id="LoginForm" action="Login/login.php" method="POST">
+        <form id="LoginForm">
             <div id="LoginContent">
                 <h1>Zaloguj sie</h1>
                 <div class="input-container">
@@ -19,11 +19,11 @@
                     <label for="password">Password:</label>
                     <input id="password" type="password" name="password">
                 </div>
-                <button id="loginButton" type="submit">Login</button>
+                <button id="loginButton" type="button">Login</button>
                 <div class="SwapButton">Register</div>
             </div>
-            </form>
-            <form id="registrationForm" action="Login/register.php" method="POST">
+        </form>
+        <form id="RegistrationForm">
             <div id="RegisterContent">
                 <h1>Zarejestruj sie</h1>
                 <div class="input-container">
@@ -38,7 +38,7 @@
                     <label for="repeat-password">Repeat Password:</label>
                     <input id="repeat-password" type="password" name="repeat-password" required>
                 </div>
-                <button id="RegisterButton" type="submit">Register</button>
+                <button id="RegisterButton" type="button">Register</button>
                 <div class="SwapButton">Login</div>
             </div>
         </form>

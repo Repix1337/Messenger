@@ -1,5 +1,8 @@
 <?php
 include 'config.php';
+header('Content-Type: application/json');
+
+$response = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $login = $_POST['login-register'];
@@ -8,10 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Check if passwords match
     if ($password !== $repeatPassword) {
-        echo "<script>
-                alert('Passwords do not match!');
-                window.history.back();
-              </script>";
+        $response['status'] = 'error';
+        $response['message'] = 'Passwords do not match';
+        echo json_encode($response);
         exit();
     }
 
@@ -22,10 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        echo "<script>
-                alert('Login already exists!');
-                window.history.back();
-              </script>";
+        $response['status'] = 'error';
+        $response['message'] = 'Login already exists';
+        echo json_encode($response);
         $stmt->close();
         $conn->close();
         exit();
@@ -39,18 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Prepare and bind
     $stmt = $conn->prepare("INSERT INTO users (login, password) VALUES (?, ?)");
     $stmt->bind_param("ss", $login, $hashedPassword);
-    
+
     if ($stmt->execute()) {
-        echo "<script>
-                localStorage.setItem('loggedIn', 'true');
-                localStorage.setItem('username', '$login');
-                alert('Your account got added');
-                window.location.href = '../index.html';
-              </script>";
+        $response['status'] = 'success';
+        $response['message'] = 'Your account got added';
+        $response['username'] = $login;
     } else {
-        echo "Error: " . $stmt->error;
+        $response['status'] = 'error';
+        $response['message'] = 'Error: ' . $stmt->error;
     }
 
+    echo json_encode($response);
     $stmt->close();
 }
 

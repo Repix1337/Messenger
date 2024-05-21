@@ -19,25 +19,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let loadedMessages = {}; // Obiekt przechowujący informacje o załadowanych wiadomościach
 
     function handleReceivedMessages(messages) {
-        // Store IDs of messages to be removed
         const messagesToRemove = [];
     
-        // Loop through loaded messages
         Object.keys(loadedMessages).forEach(messageID => {
-            // Find the corresponding message in the received messages array
             const receivedMessage = messages.find(message => message.messageID === messageID);
     
-            // Check if the message ID is not present in the received messages
             if (!receivedMessage) {
-                // Add the message ID to the list of messages to remove
                 messagesToRemove.push(messageID);
             } else {
-                // Check if the message content is different
                 if (loadedMessages[messageID] !== receivedMessage.message) {
-                    // Get the parent element
                     const parentElement = document.getElementById(messageID);
-                
-                    // Get the text content of the parent element and its children
                     let parentTextContent = "";
                     for (let i = 0; i < parentElement.childNodes.length; i++) {
                         const childNode = parentElement.childNodes[i];
@@ -45,46 +36,47 @@ document.addEventListener("DOMContentLoaded", () => {
                             parentTextContent += childNode.textContent;
                         }
                     }
-                
-                    // Check if the text content of the parent element is different
+    
                     if (parentTextContent !== receivedMessage.message) {
-                        // Update the message content in the DOM
                         const messageToUpdate = document.getElementById(messageID);
                         if (messageToUpdate) {
                             messageToUpdate.textContent = receivedMessage.message;
                         }
                     }
                 }
-            }});
-                
-    
-        // Remove messages from DOM
-        messagesToRemove.forEach(messageID => {
-            const messageToRemove = document.getElementById(messageID);
-            if (messageToRemove) {
-                messageToRemove.remove();
-                // Remove from loadedMessages object as well
-                delete loadedMessages[messageID];
             }
         });
     
-        // Add new messages to DOM
+        messagesToRemove.forEach(messageID => {
+            const messageElements = document.querySelectorAll(`[data-message-id="${messageID}"]`);
+            messageElements.forEach(element => {
+                element.remove();
+            });
+            delete loadedMessages[messageID];
+        });
+    
         messages.forEach(message => {
             const { sender, message: messageText, messageID, isloaded } = message;
     
-            // Check if message is not already loaded
             if (!loadedMessages[messageID]) {
                 const newMessageLine = document.createElement('div');
                 const newMessage = document.createElement('div');
                 const newMessageText = document.createElement('div');
                 const newMessageSender = document.createElement('div');
+    
                 newMessageLine.style.width = "100%";
                 newMessageLine.style.marginTop = "5px";
+                newMessage.classList.add('message');
+                newMessage.dataset.messageId = messageID;
+                newMessageText.dataset.messageId = messageID;
+                newMessageSender.dataset.messageId = messageID;
+                newMessageLine.dataset.messageId = messageID;
                 newMessage.style.width = "300px";
-                newMessage.classList.add('message', messageID);
-                newMessage.dataset.isloaded = isloaded; // Set 'data-isloaded' attribute
+                newMessage.dataset.isloaded = isloaded;
+    
+                newMessageSender.textContent = `${sender}: `;
                 if (sender === username) {
-                    newMessageSender.textContent = `${sender}: `;
+                    newMessageSender.style.display = 'none'; // Hide for current user's messages
                     newMessageText.textContent = `${messageText} `;
                     newMessage.style.float = "right"; 
                     newMessage.style.textAlign = "right";
@@ -92,30 +84,27 @@ document.addEventListener("DOMContentLoaded", () => {
                     newMessage.style.marginRight = "2rem";
                     newMessageText.classList.add("MyMessage");
                 } else {
-                    newMessageSender.textContent = `${sender}: `;
                     newMessageText.textContent = `${messageText} `;
                     newMessage.style.float = "left";
                     newMessage.style.textAlign = "left";
                     newMessage.style.marginLeft = "2rem";
-                    newMessage.appendChild(newMessageSender);
                 }
+    
                 newMessageText.id = messageID;
                 chatMessages.appendChild(newMessageLine);
                 newMessageLine.appendChild(newMessage);
+                newMessage.appendChild(newMessageSender); // Always append newMessageSender
                 newMessage.appendChild(newMessageText);
-                newMessageText.classList.add(messageID);
-                newMessageLine.classList.add(messageID);
-                newMessage.classList.add(messageID);
-                newMessageText.id = messageID;
-                newMessageSender.classList.add(messageID);
+    
                 const newMessageHeight = newMessage.offsetHeight;
                 newMessageLine.style.height = newMessageHeight + "px";
                 loadedMessages[messageID] = true;
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-
             }
         });
     }
+    
+    
     function loadMessages() {
         if (konto.textContent.trim() != "Zaloguj sie") {
             fetch('Main/load_messages.php')
@@ -269,26 +258,27 @@ textArea.value = parentTextContent.trim();
 MessageMenu.style.display = 'none'; 
 canEdit = true;
         }  
-    function DeleteSpecificMessage() {
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', 'Main/delete_message.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    document.querySelectorAll('[class*="' + messageID + '"]').forEach(element => {
-                        element.remove();
-                    });
-                    MessageMenu.style.display = 'none'; // Hide menu after deletion
-                    loadedMessages[messageID] = false;
-                    
-                } else {
-                    console.error('Error deleting message');
+        function DeleteSpecificMessage() {
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'Main/delete_message.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        document.querySelectorAll(`[data-message-id="${messageID}"]`).forEach(element => {
+                            element.remove(); // Remove elements instead of hiding them
+                        });
+                        MessageMenu.style.display = 'none'; // Hide menu after deletion
+                        delete loadedMessages[messageID]; // Properly remove the message from loadedMessages
+                    } else {
+                        console.error('Error deleting message');
+                    }
                 }
-            }
-        };
-        xhr.send('messageID=' + encodeURIComponent(messageID));
-    }
+            };
+            xhr.send('messageID=' + encodeURIComponent(messageID));
+        }
+        
+        
     
     
 

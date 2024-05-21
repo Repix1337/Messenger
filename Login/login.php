@@ -1,5 +1,8 @@
 <?php
 include 'config.php';
+header('Content-Type: application/json');
+
+$response = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $login = $_POST['login'];
@@ -17,19 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Verify the password
         if (password_verify($password, $hashedPassword)) {
-            echo "<script>
-                    localStorage.setItem('loggedIn', 'true');
-                    localStorage.setItem('username', '$login');
-                    alert('You logged in');
-                window.location.href = '../index.html';
-                  </script>";
+            $response['status'] = 'success';
+            $response['message'] = 'You logged in';
+            $response['username'] = $login;
         } else {
-            echo "Incorrect password.";
+            $response['status'] = 'error';
+            $response['message'] = 'Incorrect password';
         }
     } else {
-        echo "No user found.";
+        $response['status'] = 'error';
+        $response['message'] = 'No user found';
     }
 
+    echo json_encode($response);
     $stmt->close();
 }
 
