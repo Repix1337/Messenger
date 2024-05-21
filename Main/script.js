@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatMessages.style.display = 'none';
         const accountLink = document.getElementById('accountLink');
         accountLink.textContent = "Zaloguj sie";
-        accountLink.href = "LogIn.html";
+        accountLink.href = "Login/LogIn.html";
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('username');
         document.getElementById('chatTitle').textContent = 'Wybierz Konto';
