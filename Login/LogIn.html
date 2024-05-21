@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="Login/LogInStyles.css">
+    <link rel="stylesheet" href="LogInStyles.css">
 </head>
 <body>
     <div class="container">
@@ -12,7 +12,7 @@
             <div id="LoginContent">
                 <h1>Zaloguj sie</h1>
                 <div class="input-container">
-                    <label for="login">Login:</label>
+                    <label for="login">Username:</label>
                     <input id="login" type="text" name="login">
                 </div>
                 <div class="input-container">
@@ -20,14 +20,14 @@
                     <input id="password" type="password" name="password">
                 </div>
                 <button id="loginButton" type="button">Login</button>
-                <div class="SwapButton">Register</div>
+                <div class="SwapText">Don't have account yet? <span class="SwapButton">Register</span> Instead</div>
             </div>
         </form>
         <form id="RegistrationForm">
             <div id="RegisterContent">
                 <h1>Zarejestruj sie</h1>
                 <div class="input-container">
-                    <label for="login-register">Login:</label>
+                    <label for="login-register">Username:</label>
                     <input id="login-register" type="text" name="login-register" required>
                 </div>
                 <div class="input-container">
@@ -39,10 +39,10 @@
                     <input id="repeat-password" type="password" name="repeat-password" required>
                 </div>
                 <button id="RegisterButton" type="button">Register</button>
-                <div class="SwapButton">Login</div>
+                <div class="SwapText">Have account?<span class="SwapButton">Login</span> instead</div>
             </div>
         </form>
     </div>
-    <script src="Login/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const login = document.getElementById("login").value;
         const password = document.getElementById("password").value;
 
-        fetch('Login/login.php', {
+        fetch('login.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem('loggedIn', 'true');
                 localStorage.setItem('username', data.username);
                 alert(data.message);
-                window.location.href = 'index.html';
+                window.location.href = '../index.html';
             } else {
                 alert(data.message);
             }
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById("password-register").value;
         const repeatPassword = document.getElementById("repeat-password").value;
 
-        fetch('Login/register.php', {
+        fetch('register.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem('loggedIn', 'true');
                 localStorage.setItem('username', data.username);
                 alert(data.message);
-                window.location.href = 'index.html';
+                window.location.href = '../index.html';
             } else {
                 alert(data.message);
             }
