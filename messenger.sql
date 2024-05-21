@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Maj 21, 2024 at 07:00 PM
+-- Generation Time: Maj 21, 2024 at 08:32 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -46,7 +46,10 @@ INSERT INTO `users` (`id`, `login`, `password`) VALUES
 (9, 'sigma1233', '$2y$10$sbtNpbuOd9c1tpWKQLVoyeWGbREedACSkqPUSj8bGAWy3Z9OV51F.'),
 (10, 'rel', '$2y$10$hdeMckWaqf9LlPIQ6ns3J.RnSvcoFEhbAetboiFLCER22YsFYkFvW'),
 (11, 'Pedal', '$2y$10$s0DkZvph3JS2f8ejcKsfVu7P6/jEbF93RmK.C9yNhP5ozKcSvLSY6'),
-(12, 'oskar', '$2y$10$hgn6fhivQ10au6RXW0T3gevZKwqN6VsG0p679nVcsNlrYBwKcDNoK');
+(12, 'oskar', '$2y$10$hgn6fhivQ10au6RXW0T3gevZKwqN6VsG0p679nVcsNlrYBwKcDNoK'),
+(13, 'Repix12', '$2y$10$oXmEATh/E5P7D1686wLkr.btr9fhg3a4r1ySPVhjpWnVF3KDmQKPO'),
+(14, 'Repix123', '$2y$10$Nh5359BcnLKf0LFJRFSrSObvzwQQ3SL1qMOxtqIr2Hq/o2YOmVZD6'),
+(15, 'Skibidi', '$2y$10$AgitsA3OJAl63zIE6k93Ven0ROGoNjZddp5F19a14F8E9wwQzvv/e');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -66,7 +69,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
