@@ -3,16 +3,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const LoginContent = document.getElementById("LoginContent");
     const RegisterContent = document.getElementById("RegisterContent");
     const SwapButtons = document.querySelectorAll(".SwapButton");
+    let canChangeTheme = true;
 
     function swap(event) {
         event.preventDefault();
         if (isLoginVisible) {
-            LoginContent.style.display = "none";
-            RegisterContent.style.display = "block";
+            LoginContent.style.display = 'none';
+            LoginContent.style.opacity = '0';
+            RegisterContent.style.opacity = '0';
+            RegisterContent.style.display = 'block';
+            setTimeout(() => {
+                RegisterContent.style.opacity = '1';
+            }, 1);
             isLoginVisible = false;
         } else {
-            RegisterContent.style.display = "none";
-            LoginContent.style.display = "block";
+            RegisterContent.style.display = 'none';
+            RegisterContent.style.opacity = '0';
+            LoginContent.style.display = 'block';
+            setTimeout(() => {
+            LoginContent.style.opacity = '1';
+            }, 1);
             isLoginVisible = true;
         }
     }
@@ -68,5 +78,39 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(data.message);
             }
         });
+    });
+
+    document.getElementById("theme").addEventListener('click', function() {
+        if (!canChangeTheme) return;
+
+        const otherElements = document.querySelectorAll('.side-menu, .popup, .chat, #theme');
+        canChangeTheme = false;
+
+        setTimeout(() => {
+            canChangeTheme = true;
+        }, 1500);
+
+        document.body.classList.add('animate-theme');
+
+        otherElements.forEach(element => {
+            element.classList.toggle('hidden');
+        });
+
+        setTimeout(() => {
+            if (document.body.classList.contains('dark-theme')) {
+                document.body.style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
+                document.body.style.color = "white";
+            } else {
+                document.body.style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
+                document.body.style.color = "black";
+            }
+
+            setTimeout(() => {
+                document.body.classList.remove('animate-theme');
+                otherElements.forEach(element => {
+                    element.classList.toggle('hidden');
+                });
+            }, 1300);
+        }, 10);
     });
 });

@@ -7,9 +7,20 @@ body {
     color: white;
     background: radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%);
     backdrop-filter: blur(5px);
-    animation: none; 
     overflow: hidden;
     font-size: x-large;
+    margin: 0;
+}
+
+@keyframes backgroundChange {
+    0% {
+        background-color: rgba(0, 0, 0, 0);
+        transform: scale(5);
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0.3);
+        transform: scale(1);
+    }
 }
 
 .input-container {
@@ -20,49 +31,79 @@ body {
 
 .input-container label {
     margin-right: 10px;
-    width: 100px; /* Stała szerokość dla etykiet */
-    text-align: right; /* Tekst w etykietach będzie wyrównany do prawej strony */
+    width: 100px;
+    text-align: right;
 }
 
 .input-container input {
     flex: 1;
-}
-
-input {
-    background-color: rgba(0,0,0, 0.3);
-    border: 1px solid black;
-    color: white;
-    padding: 20px;
-    font-size: x-large;
-    border-radius: 20px;
-    margin-left: 10px;
+    padding: 10px;
+    font-size: large;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
 .container {
-    background-color: rgba(0,0,0, 0.3);
+    background-color: rgba(0, 0, 0, 0.5);
     border: 1px solid black;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    width: 50vh; /* Set a fixed width */
     height: fit-content;
-    text-align: center;
-    padding: 15px;
-    border-radius: 20px;
+    max-width: 100%;
 }
-#RegisterContent{
-    display: none;
-}
-#RegisterButton,#loginButton{
-    background-color: rgba(0,0,0, 0.0);
-    border: black 1px solid;
-    border-radius: 5px;
-    padding: 5px;
-    cursor: pointer;
-    color: white;
 
+form {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
 }
-.SwapText{
+
+#RegisterContent, #LoginContent {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    width: 100%;
+}
+#RegisterButton, #loginButton {
+    background-color: rgba(0, 0, 0, 0);
+    border: 5px solid;
+    font-size: 15px;
+    border-image: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet) 1;
+    border-radius: 15px;
+    padding: 10px;  
+
+    cursor: pointer;
+    text-align: right;
+    color: white;
+}
+.buttonLine{
+    width: 100%;
+    text-align: right;
+}
+.SwapText {
     text-align: right;
     font-size: medium;
 }
-.SwapButton{
+
+.SwapButton {
     color: gray;
     cursor: pointer;
+}
+
+#theme {
+    right: 0;
+    top: 1%;
+    position: fixed;
+    cursor: pointer;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.animate-theme {
+    animation: backgroundChange 1.2s cubic-bezier(.28, 1.12, 1, 1.2) forwards;
+    transition: color 0.5s ease;
 }

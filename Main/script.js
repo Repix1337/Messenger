@@ -212,11 +212,14 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('.text').style.display = 'none';
         chatMessages.style.display = 'none';
         const accountLink = document.getElementById('accountLink');
+        document.querySelector('.side-menu').style.display = 'none';
+        document.getElementById('chatTitle').href = "Login/LogIn.html";
+        document.getElementById('chatTitle').textContent = "Zaloguj się";
+        document.getElementById('chatTitle').style.color = "red";
         accountLink.textContent = "Zaloguj sie";
         accountLink.href = "Login/LogIn.html";
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('username');
-        document.getElementById('chatTitle').textContent = 'Wybierz Konto';
         popup.style.display = "none";
         chatroom.classList.remove("blur");
     }
@@ -336,9 +339,11 @@ document.addEventListener("DOMContentLoaded", () => {
         accountLink.textContent = username;
         accountLink.href = "#";
         document.getElementById('chat-messages').style.display = 'block';
+        document.querySelector('.side-menu').style.display = 'flex';
         document.querySelector('.text').style.display = 'block';
-        document.getElementById('chatTitle').textContent = username;
-        document.querySelector('.chat h1').textContent = 'Chatuj';
+        document.getElementById('chatTitle').textContent = 'Chatuj';
+        document.getElementById('chatTitle').href = '#';
+         document.getElementById('chatTitle').style.color = "white";
     }
 });
 
