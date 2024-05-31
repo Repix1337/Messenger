@@ -9,6 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password-register'];
     $repeatPassword = $_POST['repeat-password'];
 
+    // Check if login is longer than 18 characters
+    if (strlen($login) > 18) {
+        $response['status'] = 'error';
+        $response['message'] = 'Login cannot be longer than 18 characters';
+        echo json_encode($response);
+        exit();
+    }
+
     // Check if passwords match
     if ($password !== $repeatPassword) {
         $response['status'] = 'error';
