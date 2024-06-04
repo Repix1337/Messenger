@@ -210,7 +210,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function logout() {
         document.querySelector('.text').style.display = 'none';
-        chatMessages.style.display = 'none';
+        document.querySelector('.chatroom').style.display = "none";
+        document.querySelectorAll('.side').forEach(element => {
+            element.style.display = 'block';
+        })
         const accountLink = document.getElementById('accountLink');
         document.querySelector('.side-menu').style.display = 'none';
         document.getElementById('chatTitle').href = "Login/LogIn.html";
@@ -293,12 +296,12 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             if (isDarkTheme) {
                 chatroom.style.background = "radial-gradient(circle at center, #ffffff, #ffff00 30%, #00ff00 60%, #ffffff 90%)";
-                chatroom.style.color = "black";
+                chatroom.style.color = "rgb(20, 20, 20)";
                 document.querySelector("body").style.background = "rgb(255, 255, 255)";
             } else {
                 chatroom.style.background = "radial-gradient(circle at center, #000000, #0000ff 30%, #800080 60%, #000000 90%)";
                 chatroom.style.color = "white";
-                document.querySelector("body").style.background = "rgb(0, 0, 0)";
+                document.querySelector("body").style.background = "rgb(20, 20, 20)";
             }
             
             setTimeout(() => {
@@ -333,6 +336,11 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (loggedIn === 'true' && username) {
         currentUser = username;
+        chatroom.style.display = "block";
+        document.querySelectorAll('.side').forEach(element => {
+            element.style.display = 'none';
+        })
+        
         loadMessages();
         setInterval(loadMessages, 500);
         const accountLink = document.getElementById('accountLink');
@@ -345,6 +353,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('chatTitle').href = '#';
          document.getElementById('chatTitle').style.color = "white";
     }
-});
+    const left = document.getElementById("left-side");
+    
+    const handleMove = e => {
+    left.style.width = `${e.clientX / window.innerWidth * 100}%`;
+    }
 
-           
+    document.onmousemove = e => handleMove(e);
+
+    document.ontouchmove = e => handleMove(e.touches[0]);
+});
