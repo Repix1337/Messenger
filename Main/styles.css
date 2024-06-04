@@ -38,17 +38,28 @@ body {
 .hidden {
     display: none !important;
 }
-
-.side-menu {
-    border-right: 3px solid rgb(20, 20, 20);
+/* Ustawienie pozycji chat po prawej stronie side menu */
+.chat {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 70%; /* Adjust this value based on your layout */
     height: 100vh;
-    width: 20%;
     display: flex;
+    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    overflow-y: auto;
-    overflow-x: hidden
-    
+    background-color: rgba(0, 0, 0, 0.3);
 }
+
+/* Dopasowanie side menu */
+.side-menu {
+    width: 30%;
+    position: absolute; /* Ensure it stays on the left */
+    left: 0;
+    top: 0;
+}
+
 .konto {
     margin: 30px;
     background-color: rgba(0,0,0, 0.3);
@@ -70,16 +81,6 @@ a{
     color: red;
 }
 
-
-.chat {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(0,0,0, 0.3);
-}
 .side{
     height: 100vh;
     width: 100%;
@@ -122,7 +123,11 @@ a{
     scrollbar-width: thin;
 }
 
-
+h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .text {
     margin-bottom: 5px;
     justify-content: center ;
