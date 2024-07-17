@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         newMessage.dataset.isloaded = isloaded;
     
         newMessageSender.textContent = `${sender}: `;
-        if (sender === currentUser) {
+        if (sender.toLowerCase() === currentUser.toLowerCase()) {
             newMessageSender.style.display = 'none'; // Hide for current user's messages
             newMessageText.textContent = `${messageText} `;
             newMessage.style.float = "right"; 
@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Automatic Login
     const loggedIn = localStorage.getItem('loggedIn');
-    const username = localStorage.getItem('username');
+    const username = localStorage.getItem('username').toLowerCase();
     
     if (loggedIn === 'true' && username) {
         currentUser = username;
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadMessages();
         setInterval(loadMessages, 500);
         const accountLink = document.getElementById('accountLink');
-        accountLink.textContent = username;
+        accountLink.textContent = username.toLowerCase();
         accountLink.href = "#";
         document.getElementById('chat-messages').style.display = 'block';
         document.querySelector('.side-menu').style.display = 'flex';

@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 $response = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $login = $_POST['login'];
+    $login = strtolower(trim($_POST['login']));
     $password = $_POST['password'];
 
     // Fetch the user data

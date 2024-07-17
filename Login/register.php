@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 $response = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $login = $_POST['login-register'];
+    $login = strtolower(trim($_POST['login-register']));
     $password = $_POST['password-register'];
     $repeatPassword = $_POST['repeat-password'];
 
