@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
             RegisterContent.style.opacity = '0';
             LoginContent.style.display = 'block';
             setTimeout(() => {
-            LoginContent.style.opacity = '1';
+                LoginContent.style.opacity = '1';
             }, 1);
             isLoginVisible = true;
         }
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener('click', swap);
     });
 
-    document.getElementById("loginButton").addEventListener('click', function() {
+    function handleLogin() {
         const login = document.getElementById("login").value;
         const password = document.getElementById("password").value;
 
@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(data.message);
             }
         });
-    });
+    }
 
-    document.getElementById("RegisterButton").addEventListener('click', function() {
+    function handleRegister() {
         const login = document.getElementById("login-register").value;
         const password = document.getElementById("password-register").value;
         const repeatPassword = document.getElementById("repeat-password").value;
@@ -78,6 +78,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(data.message);
             }
         });
+    }
+
+    document.getElementById("loginButton").addEventListener('click', (event) => {
+        event.preventDefault();
+        handleLogin();
+    });
+
+    document.getElementById("RegisterButton").addEventListener('click', (event) => {
+        event.preventDefault();
+        handleRegister();
+    });
+
+    document.getElementById("loginForm").addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            if (isLoginVisible) {
+                handleLogin();
+            } else {
+                handleRegister();
+            }
+        }
     });
 
     document.getElementById("theme").addEventListener('click', function() {

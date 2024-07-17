@@ -55,12 +55,6 @@ body {
     max-width: 100%;
 }
 
-form {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-}
 
 #RegisterContent, #LoginContent {
     transition: opacity 0.5s ease, transform 0.5s ease;
