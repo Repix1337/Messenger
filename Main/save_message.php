@@ -1,34 +1,25 @@
 <?php
-header('Content-Type: application/json'); // Ustawienie nagłówka Content-Type na application/json
+include '../config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $messages = file_get_contents('messages.json');
-    echo $messages; // Zwrócenie zawartości pliku messages.json jako odpowiedzi
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $postData = json_decode(file_get_contents("php://input"), true); // Odczyt danych POST w formacie JSON
-    if (isset($postData['clearAll']) && $postData['clearAll'] === true) {
-        // Usunięcie wszystkich wiadomości
-        file_put_contents('messages.json', json_encode([]));
-        echo json_encode(['success' => true]);
+if (isset($_POST['clearAll']) && $_POST['clearAll'] == 'true') {
+    $sql = "DELETE * FROM messages";
+    if ($conn->query($sql) === TRUE) {
+        echo json_encode(["success" => true]);
     } else {
-        if (isset($_POST['message']) && isset($_POST['sender'])) {
-            $message = $_POST['message'];
-            $sender = $_POST['sender'];
-            $messageID = $_POST['messageID'];
+        echo json_encode(["success" => false, "error" => $conn->error]);
+    }
+} else {
+    $messageID = $_POST['messageID'];
+    $sender = $_POST['sender'];
+    $message = $_POST['message'];
 
-            $messages = file_get_contents('messages.json');
-            $messagesArray = json_decode($messages, true);
-            
-            $newMessage = array("sender" => $sender, "message" => $message, "messageID" => $messageID);
-            $messagesArray[] = $newMessage;
-            
-            file_put_contents('messages.json', json_encode($messagesArray));
-            
-            // Zwrócenie nowej wiadomości jako odpowiedzi na żądanie AJAX
-            echo json_encode($newMessage);
-        } else {
-            file_put_contents('messages.json', json_encode([]));
-        }
+    $sql = "INSERT INTO messages (messageID, sender, message) VALUES ('$messageID', '$sender', '$message')";
+    if ($conn->query($sql) === TRUE) {
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "error" => $conn->error]);
     }
 }
+
+$conn->close();
 ?>
