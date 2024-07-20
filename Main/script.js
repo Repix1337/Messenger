@@ -1,17 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // UI Elements
     const theme = document.getElementById('theme');
     const chatMessages = document.getElementById('chat-messages');
     const textArea = document.getElementById('textarea');
-    const sendButton = document.getElementById('send');
     const konto = document.querySelector(".konto");
     const popup = document.getElementById('popup'); 
     const messageMenu = document.getElementById('MessageMenu'); 
     const chatroom = document.querySelector('.chatroom');
     const deleteMessageButton = document.getElementById('DeleteMessageButton');
     const editMessageButton = document.getElementById('EditMessageButton');
-    
-    // State Variables
+
     let isDarkTheme = false;
     let canChangeTheme = true;
     let currentUser;
@@ -19,20 +16,53 @@ document.addEventListener("DOMContentLoaded", () => {
     let loadedMessages = {}; // Object storing loaded messages
     let canEdit = false;
 
-    // Handle received messages and update the DOM
+    const socket = new WebSocket('ws://localhost:8080');
+
+    socket.addEventListener('open', () => {
+        console.log('Connected to WebSocket');
+        socket.send(JSON.stringify({ type: 'loadMessages' }));
+    });
+
+    socket.addEventListener('message', event => {
+        const data = JSON.parse(event.data);
+        console.log('Received data:', data);
+    
+        if (data.type === 'loadMessages') {
+            handleReceivedMessages(data.messages);
+        } else if (data.type === 'newMessage') {
+            displayNewMessages([data.message]);
+        } else if (data.type === 'editMessage') {
+            updateMessageContentIfNeeded(data.message.messageID, data.message.message);
+        } else if (data.type === 'deleteMessage') {
+            removeMessages([data.messageID]);
+        } else if (data.type === 'clearMessages') {
+            removeMessages(Object.keys(loadedMessages));
+        } else {
+            console.error('Unexpected message format:', data);
+        }
+    });
+
+    socket.addEventListener('error', event => {
+        console.error('WebSocket error:', event);
+    });
+
+    socket.addEventListener('close', event => {
+        console.log('WebSocket connection closed:', event);
+    });
+
     function handleReceivedMessages(messages) {
         const messagesToRemove = [];
-    
+
         Object.keys(loadedMessages).forEach(messageID => {
-            const receivedMessage = messages.find(message => message.messageID === messageID);
-    
+            const receivedMessage = messages.find(message => message.messageid === messageID);
+
             if (!receivedMessage) {
                 messagesToRemove.push(messageID);
             } else {
                 updateMessageContentIfNeeded(messageID, receivedMessage.message);
             }
         });
-    
+
         removeMessages(messagesToRemove);
         displayNewMessages(messages);
     }
@@ -59,20 +89,33 @@ document.addEventListener("DOMContentLoaded", () => {
             delete loadedMessages[messageID];
         });
     }
-
     function displayNewMessages(messages) {
+        console.log('Displaying new messages:', messages);
         messages.forEach(message => {
-            const { sender, message: messageText, messageID, isloaded } = message;
+            const sender = message.sender;
+            const messageText = message.message;
+            let messageID
+            if (message.messageid != null){
+                messageID = message.messageid;
+            }
+            else
+            {
+            messageID = message.messageID;
+        }
+            console.log('Processing message:', message);
     
             if (!loadedMessages[messageID]) {
-                createMessageElement(sender, messageText, messageID, isloaded);
+                createMessageElement(sender, messageText, messageID);
                 loadedMessages[messageID] = true;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom after adding the new message
+            } else {
+                console.log('Message already loaded:', messageID);
             }
         });
     }
-
-    function createMessageElement(sender, messageText, messageID, isloaded) {
+    
+    
+    function createMessageElement(sender, messageText, messageID) {
         const newMessageLine = document.createElement('div');
         const newMessage = document.createElement('div');
         const newMessageText = document.createElement('div');
@@ -86,13 +129,12 @@ document.addEventListener("DOMContentLoaded", () => {
         newMessageSender.dataset.messageId = messageID;
         newMessageLine.dataset.messageId = messageID;
         newMessage.style.width = "300px";
-        newMessage.dataset.isloaded = isloaded;
     
         newMessageSender.textContent = `${sender}: `;
         if (sender.toLowerCase() === currentUser.toLowerCase()) {
             newMessageSender.style.display = 'none'; // Hide for current user's messages
             newMessageText.textContent = `${messageText} `;
-            newMessage.style.float = "right"; 
+            newMessage.style.float = "right";
             newMessage.style.textAlign = "right";
             newMessage.style.backgroundColor = "rgb(32, 14, 107)";
             newMessage.style.marginRight = "2rem";
@@ -107,173 +149,78 @@ document.addEventListener("DOMContentLoaded", () => {
         newMessageText.id = messageID;
         chatMessages.appendChild(newMessageLine);
         newMessageLine.appendChild(newMessage);
-        newMessage.appendChild(newMessageSender); // Always append newMessageSender
+        newMessage.appendChild(newMessageSender);
         newMessage.appendChild(newMessageText);
-    
         const newMessageHeight = newMessage.offsetHeight;
         newMessageLine.style.height = newMessageHeight + "px";
     }
     
-    function loadMessages() {
-        if (konto.textContent.trim() != "Zaloguj sie") {
-            fetch('Main/load_messages.php')
-                .then(response => response.json())
-                .then(messages => handleReceivedMessages(messages))
-                .catch(error => console.error('Error loading messages:', error));
-        }
-    }
 
     function sendMessage(event) {
         event.preventDefault();
-        const messageText = textArea.value;
-        if (messageText.trim() === '') return;
+        const message = textArea.value.trim();
+        const messageID = Date.now().toString();
 
-        if (!canEdit) {
-            sendMessageToServer(messageText);
-        } else {
-            editMessageOnServer(messageText);
-        }
-    }
+        if (!message) return;
 
-    function sendMessageToServer(messageText) {
-        const sender = currentUser;
-        messageID = Date.now() + Math.random().toString(36).substr(2, 9);
-        const formData = new FormData();
-        formData.append('message', messageText);
-        formData.append('sender', sender);
-        formData.append('messageID', messageID);
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "Main/save_message.php", true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                textArea.value = '';
-                sendButton.disabled = true;
-                setTimeout(() => {
-                    sendButton.disabled = false;
-                }, 800);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+        socket.send(JSON.stringify({
+            type: 'newMessage',
+            message: {
+                sender: currentUser,
+                message,
+                messageID
             }
-        };
-        xhr.send(formData);
-    }
+        }));
 
-    function editMessageOnServer(messageText) {
-        canEdit = false;
-        const formData = new FormData();
-        formData.append('message', messageText);
-        formData.append('sender', currentUser);
-        formData.append('messageID', messageID);
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "Main/edit_message.php", true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                document.getElementById(messageID).textContent = messageText;
-                textArea.value = '';
-                sendButton.disabled = true;
-                setTimeout(() => {
-                    sendButton.disabled = false;
-                }, 800);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        };
-        xhr.send(formData);
+        textArea.value = '';
     }
 
     function clearMessages() {
-        fetch('Main/save_message.php', {
-            method: 'POST',
-            body: JSON.stringify({ clearAll: true }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                chatMessages.innerHTML = '';
-            } else {
-                console.error('Error clearing messages:', data.error);
-            }
-        })
-        .catch(error => console.error('Error clearing messages:', error));
-    }
-
-    function showLogoutPopup() {
-        if (konto.textContent.trim() !== "Zaloguj sie") {
-            popup.style.display = "block";
-            chatroom.classList.add("blur");
-        }
-    }
-
-    function logout() {
-        document.querySelector('.text').style.display = 'none';
-        document.querySelector('.chatroom').style.display = "none";
-        document.querySelectorAll('.side').forEach(element => {
-            element.style.display = 'block';
-        })
-        const accountLink = document.getElementById('accountLink');
-        document.querySelector('.side-menu').style.display = 'none';
-        document.getElementById('chatTitle').href = "Login/LogIn.html";
-        document.getElementById('chatTitle').textContent = "Zaloguj się";
-        document.getElementById('chatTitle').style.color = "red";
-        accountLink.textContent = "Zaloguj sie";
-        accountLink.href = "Login/LogIn.html";
-        localStorage.removeItem('loggedIn');
-        localStorage.removeItem('username');
-        popup.style.display = "none";
-        chatroom.classList.remove("blur");
+        socket.send(JSON.stringify({ type: 'clearMessages' }));
+        textArea.value = '';
     }
 
     function clickMessage(event) {
-        let mess = event.target;
-        if (mess.classList.contains("MyMessage")) {
-            messageID = mess.dataset.messageId;
-            messageMenu.style.display = 'block';
-            mess.append(messageMenu);
-        }
+        const messageId = event.target.dataset.messageId;
+        if (!messageId || !loadedMessages[messageId]) return;
+
+        messageID = messageId;
+        messageMenu.style.display = 'block';
+       
+    }
+
+    function deleteSpecificMessage() {
+        socket.send(JSON.stringify({
+            type: 'deleteMessage',
+            messageID
+        }));
+        messageMenu.style.display = 'none';
     }
 
     function editMessage() {
-        const parentElement = document.getElementById(messageID);
-        let parentTextContent = "";
-    
-        // Extract text content from child text nodes
-        for (let i = 0; i < parentElement.childNodes.length; i++) {
-            const childNode = parentElement.childNodes[i];
-            if (childNode.nodeType === Node.TEXT_NODE) {
-                parentTextContent += childNode.textContent;
+        const text = textArea.value.trim();
+        if (!text) return;
+
+        socket.send(JSON.stringify({
+            type: 'editMessage',
+            message: {
+                message: text,
+                messageID
             }
-        }
-    
-        // Set the text area value to the extracted text content
-        textArea.value = parentTextContent.trim();
-    
-        // Hide the message menu
+        }));
+
         messageMenu.style.display = 'none';
-    
-        // Set the flag to indicate that the message is being edited
-        canEdit = true;
+        textArea.value = '';
     }
-    
-    function deleteSpecificMessage() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'Main/delete_message.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                document.querySelectorAll(`[data-message-id="${messageID}"]`).forEach(element => {
-                    element.remove();
-                });
-                messageMenu.style.display = 'none';
-                delete loadedMessages[messageID];
-            } else {
-                console.error('Error deleting message');
-            }
-        };
-        xhr.send('messageID=' + encodeURIComponent(messageID));
+
+    function showLogoutPopup() {
+        popup.style.display = "flex";
+        chatroom.classList.add("blur");
+    }
+
+    function logout() {
+        localStorage.setItem('loggedIn', 'false');
+        location.reload();
     }
 
     function toggleTheme() {
@@ -303,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 chatroom.style.color = "white";
                 document.querySelector("body").style.background = "rgb(20, 20, 20)";
             }
-            
+
             setTimeout(() => {
                 chatroom.classList.remove('animate-theme');
                 otherElements.forEach(element => {
@@ -333,16 +280,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Automatic Login
     const loggedIn = localStorage.getItem('loggedIn');
     const username = localStorage.getItem('username').toLowerCase();
-    
+
     if (loggedIn === 'true' && username) {
         currentUser = username;
         chatroom.style.display = "block";
         document.querySelectorAll('.side').forEach(element => {
             element.style.display = 'none';
-        })
-        
-        loadMessages();
-        setInterval(loadMessages, 500);
+        });
+        // Request to load messages after connection is established
         const accountLink = document.getElementById('accountLink');
         accountLink.textContent = username.toLowerCase();
         accountLink.href = "#";
@@ -351,13 +296,14 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('.text').style.display = 'flex';
         document.getElementById('chatTitle').textContent = 'Chatuj';
         document.getElementById('chatTitle').href = '#';
-         document.getElementById('chatTitle').style.color = "white";
+        document.getElementById('chatTitle').style.color = "white";
+        
     }
     const left = document.getElementById("left-side");
-    
+
     const handleMove = e => {
-    left.style.width = `${e.clientX / window.innerWidth * 100}%`;
-    }
+        left.style.width = `${e.clientX / window.innerWidth * 100}%`;
+    };
 
     document.onmousemove = e => handleMove(e);
 
