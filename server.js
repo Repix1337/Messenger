@@ -24,31 +24,40 @@ wss.on('connection', ws => {
     console.log('Client connected');
 
     ws.on('message', message => {
-        const data = JSON.parse(message);
+        try {
+            const data = JSON.parse(message);
+            console.log(data);
 
-        if (data.type === 'loadMessages') {
-            loadMessages(ws);
-        } else if (data.type === 'newMessage') {
-            saveMessage(data.message);
-        } else if (data.type === 'editMessage') {
-            editMessage(data.message);
-        } else if (data.type === 'deleteMessage') {
-            deleteMessage(data.messageID);
-        } else if (data.type === 'clearMessages') {
-            clearMessages();
-        } else if (data.type === 'loadChats') {
-            loadChats(ws);
-        } else if (data.type === 'newChat') {
-            saveChat(data.chat);
-        } 
+            if (data.type === 'loadMessages') {
+                loadMessages(ws);
+            } else if (data.type === 'newMessage') {
+                saveMessage(data.message);
+            } else if (data.type === 'editMessage') {
+                editMessage(data.message);
+            } else if (data.type === 'deleteMessage') {
+                deleteMessage(data.messageID);
+            } else if (data.type === 'clearMessages') {
+                clearMessages();
+            } else if (data.type === 'loadChats') {
+                console.log(data);
+                loadChats(ws);
+            } else if (data.type === 'newChat') {
+                saveChat(data.chatInfo);
+            }
+        } catch (error) {
+            console.error('Error handling message:', error);
+            ws.send(JSON.stringify({ type: 'error', message: 'Invalid message format' }));
+        }
     });
 
     ws.on('close', () => {
         console.log('Client disconnected');
     });
+
+    ws.on('error', error => {
+        console.error('WebSocket error:', error);
+    });
 });
-
-
 
 // Load messages from the database
 function loadMessages(ws) {
@@ -56,6 +65,7 @@ function loadMessages(ws) {
     db.query(query, (err, results) => {
         if (err) {
             console.error('Error fetching messages:', err.stack);
+            ws.send(JSON.stringify({ type: 'error', message: 'Error fetching messages' }));
             return;
         }
         ws.send(JSON.stringify({
@@ -65,11 +75,11 @@ function loadMessages(ws) {
     });
 }
 
-
 // Save a new message to the database
 function saveMessage(message) {
-    const query = 'INSERT INTO messages (sender, message, messageid) VALUES (?, ?, ?)';
-    db.query(query, [message.sender, message.message, message.messageID], err => {
+    console.log('Message received for saving:', message);
+    const query = 'INSERT INTO messages (sender, message, messageid, chatid) VALUES (?, ?, ?, ?)';
+    db.query(query, [message.sender, message.message, message.messageID, message.chatid], err => {
         if (err) {
             console.error('Error saving message:', err.stack);
             return;
@@ -78,7 +88,6 @@ function saveMessage(message) {
         broadcastMessage({ type: 'newMessage', message });
     });
 }
-
 
 // Edit an existing message in the database
 function editMessage(message) {
@@ -119,7 +128,7 @@ function clearMessages() {
     });
 }
 
-// Broadcast a message to all connected clients except the sender
+// Broadcast a message to all connected clients
 function broadcastMessage(message) {
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
@@ -128,11 +137,14 @@ function broadcastMessage(message) {
     });
 }
 
+// Load chats from the database
 function loadChats(ws) {
+    
     const query = 'SELECT * FROM chats';
     db.query(query, (err, results) => {
         if (err) {
-            console.error('Error fetching Chat info:', err.stack);
+            console.error('Error fetching chats:', err.stack);
+            ws.send(JSON.stringify({ type: 'error', message: 'Error fetching chats' }));
             return;
         }
         ws.send(JSON.stringify({
@@ -142,13 +154,12 @@ function loadChats(ws) {
     });
 }
 
-
-// Save a new message to the database
+// Save a new chat to the database
 function saveChat(chat) {
     const query = 'INSERT INTO chats (chatid, name, password, author) VALUES (?, ?, ?, ?)';
     db.query(query, [chat.chatid, chat.name, chat.password, chat.author], err => {
         if (err) {
-            console.error('Error saving message:', err.stack);
+            console.error('Error saving chat:', err.stack);
             return;
         }
         console.log('Chat saved');
@@ -156,19 +167,7 @@ function saveChat(chat) {
     });
 }
 
-
-// Delete a message from the database
-function deleteChat(chatid) {
-    const query = 'DELETE FROM chats WHERE chatid = ?';
-    db.query(query, [chatid], err => {
-        if (err) {
-            console.error('Error deleting Chat:', err.stack);
-            return;
-        }
-        console.log('Chat deleted');
-        broadcastChat({ type: 'deleteChat', messageID });
-    });
-}
+// Broadcast a chat to all connected clients
 function broadcastChat(chat) {
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
@@ -176,4 +175,5 @@ function broadcastChat(chat) {
         }
     });
 }
+
 console.log('WebSocket server is running on ws://localhost:8080');

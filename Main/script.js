@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    localStorage.setItem('SelectedChat', null);
     const theme = document.getElementById('theme');
     const chatMessages = document.getElementById('chat-messages');
     const textArea = document.getElementById('textarea');
@@ -28,13 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket');
         socket.send(JSON.stringify({ type: 'loadChats' }));
-        
     });
 
     socket.addEventListener('message', event => {
-        const data = JSON.parse(event.data);
+        var data = JSON.parse(event.data);
         console.log('Received data:', data);
-        console.log(data.c);
+        
 
     
         if (data.type === 'loadMessages') {
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         removeMessages(messagesToRemove);
         displayNewMessages(messages);
     }
-
+    
     function updateMessageContentIfNeeded(messageID, newMessageContent) {
         const messageElement = document.getElementById(messageID);
         if (!messageElement) return;
@@ -109,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messages.forEach(message => {
             const sender = message.sender;
             const messageText = message.message;
+            const chatID = localStorage.getItem('SelectedChat')
             let messageID
             if (message.messageid != null){
                 messageID = message.messageid;
@@ -119,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
             console.log('Processing message:', message);
     
-            if (!loadedMessages[messageID]) {
+            if (!loadedMessages[messageID] && chatID === message.chatid) {
                 createMessageElement(sender, messageText, messageID);
                 loadedMessages[messageID] = true;
                 chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom after adding the new message
@@ -175,7 +176,8 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         const message = textArea.value.trim();
         const messageID = Date.now().toString();
-
+        const chatid = localStorage.getItem('SelectedChat');
+        console.log(chatid)
         if (!message) return;
 
         socket.send(JSON.stringify({
@@ -183,7 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
             message: {
                 sender: currentUser,
                 message,
-                messageID
+                messageID,
+                chatid
             }
         }));
 
@@ -229,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showLogoutPopup() {
-        popup.style.display = "flex";
+        popup.style.display = "block";
         chatroom.classList.add("blur");
     }
 
@@ -300,10 +303,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
         socket.send(JSON.stringify({
             type: 'newChat',
-            chatid: ChatID,
-            name: ChatName,
-            password: ChatPassword,
-            author: Author
+            chatInfo: {
+                chatid: ChatID,
+                name: ChatName,
+                password: ChatPassword,
+                author: Author
+            }
         }));
     
         console.log('ChatSelector:', ChatSelector);
@@ -365,7 +370,9 @@ document.addEventListener("DOMContentLoaded", () => {
         newChatAuthor.textContent = `${Author}: `;
         newChatName.textContent = `${ChatName} `;
         newChat.style.zIndex = '999';
-        newChatName.id = ChatID;
+        newChatName.style.zIndex = '-1';
+        newChatAuthor.style.zIndex = '-1';
+        newChat.id = ChatID;
         ChatList.appendChild(newChatLine);
         newChatLine.appendChild(newChat);
         newChat.appendChild(newChatAuthor);
@@ -402,7 +409,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     ChatList.addEventListener('click', (event) => {
         if (event.target.classList.contains('ChatElements')) {
+            localStorage.setItem('SelectedChat', event.target.id)
+            console.log(localStorage.getItem('SelectedChat'))
             JoinAChat();
+            
         }
     });
 
