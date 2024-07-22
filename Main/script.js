@@ -8,24 +8,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatroom = document.querySelector('.chatroom');
     const deleteMessageButton = document.getElementById('DeleteMessageButton');
     const editMessageButton = document.getElementById('EditMessageButton');
+    const ChatSelector = document.getElementById('Chat-selector')
+    const ChatCreateButton = document.getElementById('ChatCreateButton');
+    const ChatList = document.getElementById('Chats');
+    const ChatCreateForm = document.getElementById('ChatCreateForm');
+    const CreateChat = document.getElementById('Create');
 
     let isDarkTheme = false;
     let canChangeTheme = true;
     let currentUser;
     let messageID;
     let loadedMessages = {}; // Object storing loaded messages
+    let loadedChats = {};
     let canEdit = false;
+    let Chatcreation = false
 
     const socket = new WebSocket('ws://localhost:8080');
 
     socket.addEventListener('open', () => {
         console.log('Connected to WebSocket');
-        socket.send(JSON.stringify({ type: 'loadMessages' }));
+        socket.send(JSON.stringify({ type: 'loadChats' }));
+        
     });
 
     socket.addEventListener('message', event => {
         const data = JSON.parse(event.data);
         console.log('Received data:', data);
+        console.log(data.c);
+
     
         if (data.type === 'loadMessages') {
             handleReceivedMessages(data.messages);
@@ -37,11 +47,16 @@ document.addEventListener("DOMContentLoaded", () => {
             removeMessages([data.messageID]);
         } else if (data.type === 'clearMessages') {
             removeMessages(Object.keys(loadedMessages));
-        } else {
+        } else if (data.type === 'loadChats') {
+            handleReceivedChats(data.chatInfo);
+        } else if (data.type === 'newChat') {
+            displayNewChats([data.chat]);
+        }  else {
             console.error('Unexpected message format:', data);
         }
     });
-
+    
+   
     socket.addEventListener('error', event => {
         console.error('WebSocket error:', event);
     });
@@ -188,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageMenu.style.display = 'block';
        
     }
-
+    
     function deleteSpecificMessage() {
         socket.send(JSON.stringify({
             type: 'deleteMessage',
@@ -259,11 +274,120 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 1300);
         }, 10);
     }
+    function ChatCreationSwap(){
+        if (!Chatcreation){
+            ChatCreateForm.style.display = 'flex';
+            ChatList.style.display = 'none';
+            Chatcreation = true;
+        }
+        else{
+            ChatCreateForm.style.display = 'none';
+            ChatList.style.display = 'flex';
+            Chatcreation = false;    
+        }
+    }
+    function ChatCreate(event) {
+        event.preventDefault();
+        let ChatName = document.getElementById('Name').value;
+        let ChatPassword = document.getElementById('password').value;
+        let Author = currentUser; // Assuming `currentUser` is defined correctly
+        let ChatID = Date.now() * 16;
+    
+        console.log('ChatName:', ChatName);
+        console.log('ChatPassword:', ChatPassword);
+        console.log('Author:', Author);
+        console.log('ChatID:', ChatID);
+    
+        socket.send(JSON.stringify({
+            type: 'newChat',
+            chatid: ChatID,
+            name: ChatName,
+            password: ChatPassword,
+            author: Author
+        }));
+    
+        console.log('ChatSelector:', ChatSelector);
+        console.log('Chat Element:', document.querySelector('.chat'));
+        console.log('Chat Messages:', document.getElementById('chat-messages'));
+    
+        ChatSelector.style.display = 'none';
+        document.querySelector('.chat').style.display = 'flex';
+        document.getElementById('chat-messages').style.display = 'block';
+        socket.send(JSON.stringify({ type: 'loadMessages' }));
+    }
+    
+    
+        function handleReceivedChats(chats) {
+            const chatsToRemove = [];
+    
+            Object.keys(loadedChats).forEach(chatID => {
+                const receivedChat = chats.find(chat => chat.chatid === chatID);
+    
+                if (!receivedChat) {
+                    chatsToRemove.push(chatID);
+                } 
+            });
+    
+            displayNewChats(chats);
+        }
+        function displayNewChats(chats){
+            console.log('Displaying new Chats:', chats);
+        chats.forEach(chat => {
+            const ChatID = chat.chatid;
+            const ChatName = chat.name;
+            const ChatPassword = chat.password;
+            const Author = chat.author
+        
+            console.log('Processing Chat:', chat);
+    
+            if (!loadedChats[ChatID]) {
+                createChatElement(ChatID, ChatName, ChatPassword,Author);
+                loadedChats[ChatID] = true;
+                ChatList.scrollTop = ChatList.scrollHeight; // Scroll to the bottom after adding the new message
+            } else {
+                console.log('Chat already loaded:', chatID);
+            }
+        });
+    }
+        function createChatElement(ChatID, ChatName, ChatPassword,Author){
+        const newChatLine = document.createElement('div');
+        const newChat = document.createElement('div');
+        const newChatName = document.createElement('div');
+        const newChatAuthor = document.createElement('div');
+    
+        newChatLine.style.width = "100%";
+        newChatLine.style.marginTop = "5px";
+        newChat.classList.add('ChatElements');
+        newChat.dataset.chatID = ChatID;
+        newChatName.dataset.chatID = ChatID;
+        newChatAuthor.dataset.chatID = ChatID;
+        newChatLine.dataset.chatID = ChatID;
+        newChatAuthor.textContent = `${Author}: `;
+        newChatName.textContent = `${ChatName} `;
+        newChat.style.zIndex = '999';
+        newChatName.id = ChatID;
+        ChatList.appendChild(newChatLine);
+        newChatLine.appendChild(newChat);
+        newChat.appendChild(newChatAuthor);
+        newChat.appendChild(newChatName);
+        const newChatHeight = newChat.offsetHeight;
+        newChatLine.style.height = newChatHeight + "px";
+        }
+        function JoinAChat(){
+        ChatSelector.style.display = 'none';
+        document.querySelector('.chat').style.display = 'flex';
+        document.getElementById('chat-messages').style.display = 'block';
+        socket.send(JSON.stringify({ type: 'loadMessages' }));
+        
+        }
+   
 
     // Event Listeners
     document.getElementById('messageForm').addEventListener('submit', sendMessage);
     document.getElementById('reset-button').addEventListener('click', clearMessages);
     konto.addEventListener('click', showLogoutPopup);
+    CreateChat.addEventListener('click', ChatCreate)
+    ChatCreateButton.addEventListener('click',ChatCreationSwap)
     document.getElementById("tak").addEventListener('click', logout);
     document.getElementById("nie").addEventListener('click', () => {
         popup.style.display = "none";
@@ -275,6 +399,11 @@ document.addEventListener("DOMContentLoaded", () => {
     editMessageButton.addEventListener('click', editMessage);
     messageMenu.addEventListener('mouseleave', () => {
         messageMenu.style.display = 'none';
+    });
+    ChatList.addEventListener('click', (event) => {
+        if (event.target.classList.contains('ChatElements')) {
+            JoinAChat();
+        }
     });
 
     // Automatic Login
@@ -291,7 +420,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const accountLink = document.getElementById('accountLink');
         accountLink.textContent = username.toLowerCase();
         accountLink.href = "#";
-        document.getElementById('chat-messages').style.display = 'block';
+        document.getElementById('chat-messages').style.display = 'none';
+        document.getElementById('Chat-selector').style.display = 'flex';
         document.querySelector('.side-menu').style.display = 'flex';
         document.querySelector('.text').style.display = 'flex';
         document.getElementById('chatTitle').textContent = 'Chatuj';

@@ -191,6 +191,7 @@ h1 {
     right: 0%;
     position: fixed;
     cursor:pointer;
+    z-index: 9999;
 }
 #chatmessages::-webkit-scrollbar {
     width: 12px;
@@ -231,4 +232,60 @@ h1 {
 }
 #DeleteMessageButton{
     cursor: pointer;
+}
+#Chat-selector{
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 70%; /* Adjust this value based on your layout */
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.3);
+}
+#ChatCreateButton{
+    margin: 5px;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+    background-color: rgba(0,0,0, 0.3);
+    border: 1px solid rgb(20, 20, 20);
+    color: white;
+    padding: 10px;
+    font-size: large;
+    border-radius: 10px;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.input-container label {
+    margin-right: 25px;
+    width: 100px;
+    text-align: right;
+}
+#Chats{
+    overflow-y: scroll;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.ChatElements{
+    margin: 30px;
+    background-color: rgba(0,0,0, 0.3);
+    border: 2px solid white;
+    border-radius: 20px;
+    width: 90%;
+    height: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 50px;
+    text-align: center;
 }

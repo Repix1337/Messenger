@@ -23,7 +23,6 @@ const wss = new WebSocket.Server({ port: 8080 });
 wss.on('connection', ws => {
     console.log('Client connected');
 
-    // Load messages from the database and send to the client
     ws.on('message', message => {
         const data = JSON.parse(message);
 
@@ -37,13 +36,18 @@ wss.on('connection', ws => {
             deleteMessage(data.messageID);
         } else if (data.type === 'clearMessages') {
             clearMessages();
-        }
+        } else if (data.type === 'loadChats') {
+            loadChats(ws);
+        } else if (data.type === 'newChat') {
+            saveChat(data.chat);
+        } 
     });
 
     ws.on('close', () => {
         console.log('Client disconnected');
     });
 });
+
 
 
 // Load messages from the database
@@ -124,5 +128,52 @@ function broadcastMessage(message) {
     });
 }
 
+function loadChats(ws) {
+    const query = 'SELECT * FROM chats';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching Chat info:', err.stack);
+            return;
+        }
+        ws.send(JSON.stringify({
+            type: 'loadChats',
+            chatInfo: results
+        }));
+    });
+}
 
+
+// Save a new message to the database
+function saveChat(chat) {
+    const query = 'INSERT INTO chats (chatid, name, password, author) VALUES (?, ?, ?, ?)';
+    db.query(query, [chat.chatid, chat.name, chat.password, chat.author], err => {
+        if (err) {
+            console.error('Error saving message:', err.stack);
+            return;
+        }
+        console.log('Chat saved');
+        broadcastChat({ type: 'newChat', chat });
+    });
+}
+
+
+// Delete a message from the database
+function deleteChat(chatid) {
+    const query = 'DELETE FROM chats WHERE chatid = ?';
+    db.query(query, [chatid], err => {
+        if (err) {
+            console.error('Error deleting Chat:', err.stack);
+            return;
+        }
+        console.log('Chat deleted');
+        broadcastChat({ type: 'deleteChat', messageID });
+    });
+}
+function broadcastChat(chat) {
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(chat));
+        }
+    });
+}
 console.log('WebSocket server is running on ws://localhost:8080');
