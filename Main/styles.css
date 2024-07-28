@@ -55,9 +55,9 @@ body {
 /* Dopasowanie side menu */
 .side-menu {
     width: 30%;
-    position: absolute; /* Ensure it stays on the left */
-    left: 0;
-    top: 0;
+    display: flex;
+    flex-direction: column;
+    
 }
 
 .konto {
@@ -70,6 +70,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    justify-self: flex-start;
     cursor: pointer;
     font-size: 50px;
     text-align: center;
@@ -245,6 +246,7 @@ h1 {
         background-color: rgba(0, 0, 0, 0.3);
 }
 #ChatCreateButton{
+    display: flex;
     margin: 5px;
     justify-content: center;
     align-items: center;
@@ -275,6 +277,19 @@ h1 {
     align-items: center;
     height: 100%;
 }
+#Chats::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  #Chats::-webkit-scrollbar-track {
+    background: #333;
+  }
+  
+  #Chats::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 20px;
+    border: 3px solid #333;
+  }
 .ChatElements{
     margin: 30px;
     background-color: rgba(0,0,0, 0.3);
@@ -285,6 +300,21 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    font-size: 50px;
+    text-align: center;
+}
+#GoBack{
+    margin: 30px;
+    background-color: rgba(0,0,0, 0.3);
+    border: 2px solid white;
+    border-radius: 20px;
+    width: 90%;
+    height: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100%;
     cursor: pointer;
     font-size: 50px;
     text-align: center;

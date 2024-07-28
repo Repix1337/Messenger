@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const ChatList = document.getElementById('Chats');
     const ChatCreateForm = document.getElementById('ChatCreateForm');
     const CreateChat = document.getElementById('Create');
+    const GoBack = document.getElementById('GoBack')
+    const popupPassword = document.getElementById('popupPassword')
+    const ChatPasswordInput = document.getElementById('chatPasswordInput');
+    const ChatSubmitPassword = document.getElementById('chatSubmitPassword');
+
 
     let isDarkTheme = false;
     let canChangeTheme = true;
@@ -33,10 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socket.addEventListener('message', event => {
         var data = JSON.parse(event.data);
-        console.log('Received data:', data);
         
-
-    
         if (data.type === 'loadMessages') {
             handleReceivedMessages(data.messages);
         } else if (data.type === 'newMessage') {
@@ -51,6 +53,16 @@ document.addEventListener("DOMContentLoaded", () => {
             handleReceivedChats(data.chatInfo);
         } else if (data.type === 'newChat') {
             displayNewChats([data.chat]);
+        }else if (data.type === 'joinChat') {
+            DoesItHavePassword([data.chatInfo]);
+        } else if (data.type === 'passwordCheck') {
+            if (data.success) {
+                popupPassword.style.display = 'none';
+                chatroom.style.display = 'block';
+                JoinAChat();
+            } else {
+                alert('Incorrect password. Please try again.');
+            }
         }  else {
             console.error('Unexpected message format:', data);
         }
@@ -105,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     function displayNewMessages(messages) {
-        console.log('Displaying new messages:', messages);
         messages.forEach(message => {
             const sender = message.sender;
             const messageText = message.message;
@@ -118,15 +129,13 @@ document.addEventListener("DOMContentLoaded", () => {
             {
             messageID = message.messageID;
         }
-            console.log('Processing message:', message);
+            
     
             if (!loadedMessages[messageID] && chatID === message.chatid) {
                 createMessageElement(sender, messageText, messageID);
                 loadedMessages[messageID] = true;
                 chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom after adding the new message
-            } else {
-                console.log('Message already loaded:', messageID);
-            }
+            } 
         });
     }
     
@@ -138,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const newMessageSender = document.createElement('div');
     
         newMessageLine.style.width = "100%";
+        newMessageLine.classList.add('messageLine');
         newMessageLine.style.marginTop = "5px";
         newMessage.classList.add('message');
         newMessage.dataset.messageId = messageID;
@@ -177,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const message = textArea.value.trim();
         const messageID = Date.now().toString();
         const chatid = localStorage.getItem('SelectedChat');
-        console.log(chatid)
+        
         if (!message) return;
 
         socket.send(JSON.stringify({
@@ -277,6 +287,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 1300);
         }, 10);
     }
+
+    function GoBackToTheList(){
+        loadedMessages = {};
+        ChatSelector.style.display = 'block';
+        document.querySelector('.chat').style.display = 'none';
+        document.getElementById('chat-messages').style.display = 'none';
+        document.querySelectorAll('.messageLine').forEach(element => {
+            element.remove();
+        })
+        ChatCreateForm.style.display = 'none';
+            ChatList.style.display = 'block';
+            Chatcreation = false;  
+            ChatCreateButton.style.display = 'flex';
+    }
     function ChatCreationSwap(){
         if (!Chatcreation){
             ChatCreateForm.style.display = 'flex';
@@ -285,22 +309,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         else{
             ChatCreateForm.style.display = 'none';
-            ChatList.style.display = 'flex';
+            ChatList.style.display = 'block';
             Chatcreation = false;    
         }
     }
     function ChatCreate(event) {
         event.preventDefault();
+        
         let ChatName = document.getElementById('Name').value;
         let ChatPassword = document.getElementById('password').value;
         let Author = currentUser; // Assuming `currentUser` is defined correctly
         let ChatID = Date.now() * 16;
     
-        console.log('ChatName:', ChatName);
-        console.log('ChatPassword:', ChatPassword);
-        console.log('Author:', Author);
-        console.log('ChatID:', ChatID);
-    
+        
         socket.send(JSON.stringify({
             type: 'newChat',
             chatInfo: {
@@ -310,15 +331,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 author: Author
             }
         }));
-    
-        console.log('ChatSelector:', ChatSelector);
-        console.log('Chat Element:', document.querySelector('.chat'));
-        console.log('Chat Messages:', document.getElementById('chat-messages'));
-    
+        document.getElementById('chatTitle').textContent = ChatName;
         ChatSelector.style.display = 'none';
         document.querySelector('.chat').style.display = 'flex';
         document.getElementById('chat-messages').style.display = 'block';
+        localStorage.setItem('SelectedChat', ChatID);
         socket.send(JSON.stringify({ type: 'loadMessages' }));
+        document.querySelectorAll('.messageLine').forEach(element => {
+            element.remove();
+        })
+        loadedMessages = {};
     }
     
     
@@ -336,22 +358,18 @@ document.addEventListener("DOMContentLoaded", () => {
             displayNewChats(chats);
         }
         function displayNewChats(chats){
-            console.log('Displaying new Chats:', chats);
+            
         chats.forEach(chat => {
             const ChatID = chat.chatid;
             const ChatName = chat.name;
             const ChatPassword = chat.password;
             const Author = chat.author
         
-            console.log('Processing Chat:', chat);
-    
             if (!loadedChats[ChatID]) {
                 createChatElement(ChatID, ChatName, ChatPassword,Author);
                 loadedChats[ChatID] = true;
                 ChatList.scrollTop = ChatList.scrollHeight; // Scroll to the bottom after adding the new message
-            } else {
-                console.log('Chat already loaded:', chatID);
-            }
+            } 
         });
     }
         function createChatElement(ChatID, ChatName, ChatPassword,Author){
@@ -363,6 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
         newChatLine.style.width = "100%";
         newChatLine.style.marginTop = "5px";
         newChat.classList.add('ChatElements');
+        newChatName.classList.add('ChatName');
         newChat.dataset.chatID = ChatID;
         newChatName.dataset.chatID = ChatID;
         newChatAuthor.dataset.chatID = ChatID;
@@ -380,14 +399,33 @@ document.addEventListener("DOMContentLoaded", () => {
         const newChatHeight = newChat.offsetHeight;
         newChatLine.style.height = newChatHeight + "px";
         }
+        function DoesItHavePassword(chats) {
+            const selectedChatId = localStorage.getItem('SelectedChat');
+        
+            chats.forEach(fakechat => {
+                fakechat.forEach(chat => {
+                if (chat.chatid == selectedChatId) { 
+                    if (chat.password === '') {
+                        JoinAChat();
+                    } else {
+                        popupPassword.style.display = 'block';
+                        document.getElementById('noclick').style.display = 'block';
+                        chatroom.classList.add("blur");
+                    }
+                }
+            })});
+        }
+        
         function JoinAChat(){
+        ChatPasswordInput.value = '';
+        chatroom.classList.remove("blur");
         ChatSelector.style.display = 'none';
         document.querySelector('.chat').style.display = 'flex';
         document.getElementById('chat-messages').style.display = 'block';
         socket.send(JSON.stringify({ type: 'loadMessages' }));
-        
         }
-   
+        
+        
 
     // Event Listeners
     document.getElementById('messageForm').addEventListener('submit', sendMessage);
@@ -400,6 +438,18 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.style.display = "none";
         chatroom.classList.remove("blur");
     });
+    ChatSubmitPassword.addEventListener('click', (event) => {
+        event.preventDefault();
+        const chatid = localStorage.getItem('SelectedChat');
+        const password = ChatPasswordInput.value;
+
+        socket.send(JSON.stringify({
+            type: 'checkPassword',
+            chatid,
+            password
+        }));
+    });
+    GoBack.addEventListener('click', GoBackToTheList);
     theme.addEventListener('click', toggleTheme);
     chatMessages.addEventListener('click', clickMessage);
     deleteMessageButton.addEventListener('click', deleteSpecificMessage);
@@ -410,12 +460,24 @@ document.addEventListener("DOMContentLoaded", () => {
     ChatList.addEventListener('click', (event) => {
         if (event.target.classList.contains('ChatElements')) {
             localStorage.setItem('SelectedChat', event.target.id)
-            console.log(localStorage.getItem('SelectedChat'))
-            JoinAChat();
+            const chatNameElementValue = event.target.querySelector('.ChatName').textContent;
+            document.getElementById('chatTitle').textContent = chatNameElementValue;
+            socket.send(JSON.stringify({type: 'joinChat'}));
             
         }
     });
-
+    document.getElementById('noclick').addEventListener('click', (event) => {
+        if (!event.target.classList.contains('popupcontainerAndElements')){
+            ChatPasswordInput.value = '';
+            popupPassword.style.display = 'none';
+            document.getElementById('noclick').style.display = 'none';
+            chatroom.classList.remove("blur");
+        }
+        
+    })
+    document.getElementById('popupPassword').addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
     // Automatic Login
     const loggedIn = localStorage.getItem('loggedIn');
     const username = localStorage.getItem('username').toLowerCase();
@@ -434,7 +496,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('Chat-selector').style.display = 'flex';
         document.querySelector('.side-menu').style.display = 'flex';
         document.querySelector('.text').style.display = 'flex';
-        document.getElementById('chatTitle').textContent = 'Chatuj';
         document.getElementById('chatTitle').href = '#';
         document.getElementById('chatTitle').style.color = "white";
         
