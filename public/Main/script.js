@@ -163,13 +163,18 @@ document.addEventListener("DOMContentLoaded", () => {
         newMessageLine.dataset.messageId = messageID;
         newMessage.style.width = "300px";
     
-        newMessageSender.textContent = `${sender}: `;
+        newMessageSender.textContent = sender;
+        newMessageSender.style.color = 'rgb(41, 255, 144)'
         if (sender.toLowerCase() === currentUser.toLowerCase()) {
             newMessageSender.style.display = 'none'; // Hide for current user's messages
             newMessageText.textContent = `${messageText} `;
             newMessage.style.float = "right";
             newMessage.style.textAlign = "right";
-            newMessage.style.backgroundColor = "rgb(32, 14, 107)";
+            newMessage.style.textAlign = "left";
+            if (newMessageText.textContent.trim() != "")
+            {
+            newMessage.style.background = 'linear-gradient(to right, #800080, #DA70D6)';
+            }   
             newMessage.style.marginRight = "2rem";
             newMessageText.classList.add("MyMessage");
         } else {
@@ -182,13 +187,19 @@ document.addEventListener("DOMContentLoaded", () => {
         chatMessages.appendChild(newMessageLine);
         newMessageLine.appendChild(newMessage);
         newMessage.appendChild(newMessageSender);
-        newMessage.appendChild(newMessageText);
         if (imagePath != null) {
             img.src = imagePath;
             img.style.width = '100%';
             img.style.height = '200px';
             img.alt = 'Image';
+            img.style.borderRadius = "10px";
             newMessage.appendChild(img); // Correctly append the image to the newMessage element
+        }
+        newMessage.appendChild(newMessageText);
+        console.log(newMessageText.textContent);
+        if (newMessageText.textContent.trim() === ""){
+            newMessage.style.backgroundColor = 'rgba(0,0,0,0)';
+            newMessage.style.border = 'rgba(0,0,0,0)';
         }
         const newMessageHeight = newMessage.offsetHeight;
         newMessageLine.style.height = newMessageHeight + "px";
@@ -523,6 +534,9 @@ document.addEventListener("DOMContentLoaded", () => {
     chatMessages.addEventListener('click', clickMessage);
     deleteMessageButton.addEventListener('click', deleteSpecificMessage);
     editMessageButton.addEventListener('click', editMessage);
+    document.getElementById('imgButton').addEventListener('click', function() {
+        document.getElementById('imageInput').click();
+    });
     messageMenu.addEventListener('mouseleave', () => {
         messageMenu.style.display = 'none';
     });

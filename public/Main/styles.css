@@ -43,18 +43,18 @@ body {
     position: absolute;
     right: 0;
     top: 0;
-    width: 70%; /* Adjust this value based on your layout */
+    width: 75vw; /* Adjust this value based on your layout */
     height: 100vh;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Dopasowanie side menu */
 .side-menu {
-    width: 30%;
+    width: 25vw;
     display: flex;
     flex-direction: column;
     
@@ -132,6 +132,8 @@ h1 {
 .text {
     margin-bottom: 5px;
     justify-content: center ;
+    align-content: center;
+    text-align: center;
     width: 50rem;
 }
 
@@ -208,8 +210,8 @@ h1 {
     border: 3px solid #333;
   }
 .message{
-    background-color: rgba(0,0,0, 0.3);
-    border: 1.5px solid white;
+    background-color: rgba(0,0,0, 0.6);
+    border: 1.5px solid rgba(0, 0, 0, 0);
     word-wrap: break-word;
     position: relative;
     padding: 5px;
@@ -243,7 +245,7 @@ h1 {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.4);
 }
 #ChatCreateButton{
     display: flex;
@@ -318,4 +320,14 @@ h1 {
     cursor: pointer;
     font-size: 50px;
     text-align: center;
+}
+#imageInput{
+    display: none;
+}
+#imgButton{
+   height: 30px;
+   width: 30px;
+   margin: auto;
+   align-self: center;
+   color: black;
 }
