@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 28 Lip 2024, 23:00
+-- Czas generowania: 07 Sie 2024, 03:13
 -- Wersja serwera: 10.4.22-MariaDB
 -- Wersja PHP: 8.0.13
 
@@ -53,35 +53,19 @@ CREATE TABLE `messages` (
   `sender` varchar(18) NOT NULL,
   `message` varchar(999) NOT NULL,
   `messageid` varchar(100) NOT NULL,
-  `chatid` varchar(255) NOT NULL
+  `chatid` varchar(255) NOT NULL,
+  `imagePath` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Zrzut danych tabeli `messages`
 --
 
-INSERT INTO `messages` (`sender`, `message`, `messageid`, `chatid`) VALUES
-('repix', 'df', '1722075150804', '27552349243184'),
-('repix', 'as', '1722075150965', '27552349243184'),
-('repix', 'das', '1722075151111', '27552349243184'),
-('repix', 'das', '1722075151273', '27552349243184'),
-('repix', 'ads', '1722075151540', '27552349243184'),
-('repix', 'okej lets go', '1722076318951', '27553221033424'),
-('lol12312', 'Siema', '1722081716121', '27553307403456'),
-('lol12312', 'sdaas', '1722081716727', '27553307403456'),
-('lol12312', 'das', '1722081717109', '27553307403456'),
-('lol12312', 'das', '1722081733837', '27553307702944'),
-('lol12312', 'dasdas', '1722081884456', '27553310121856'),
-('lol12312', 'swdfew', '1722081885575', '27553310121856'),
-('lol12312', 'dsadas', '1722081911043', '27553310546272'),
-('lol12312', 'ewefrg', '1722081911970', '27553310546272'),
-('lol12312', 'dsa', '1722082036109', '27553312538240'),
-('lol12312', 'sdsadas', '1722082112548', '27553313773376'),
-('lol12312', 'rfgedg', '1722082113476', '27553313773376'),
-('lol12312', 'ok', '1722088554953', '27553416846720'),
-('lol12312', 'lollllllll', '1722088676263', '27553416846720'),
-('repix', 'witam', '1722088808175', '27553312538240'),
-('repix', 'a tutaj chyba cos dziala ????', '1722088831199', '27553416846720');
+INSERT INTO `messages` (`sender`, `message`, `messageid`, `chatid`, `imagePath`) VALUES
+('repix', 'xd', '1722993131814', '27553312538240', 'uploads/35f8da9f-5f3a-4a19-8c42-acc3654d839f_pobrane.jpg'),
+('repix', 'Moja reakcja', '1722993139695', '27553312538240', NULL),
+('repix', 'rel', '1722993140653', '27553312538240', NULL),
+('repix', 'big', '1722993144771', '27553312538240', NULL);
 
 -- --------------------------------------------------------
 
