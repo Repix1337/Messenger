@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="image.png">
+    <link rel="stylesheet" href="Main/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>ChatRoom</title>
+</head> 
+<body>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            Do you really wanna logout
+        </div>
+        <div class="popup-wybor">
+            <div id="tak">Yes</div>
+            <div class="nie">Go Back</div>
+        </div>
+    </div>
+    <div id="pfpChangePopup" class="popup">
+        <div class="popup-content">
+            Select a photo
+        </div>
+        <form id="pfpChangeForm">
+            <div class="popup-wybor">
+                <input type="file" id="pfpInput" accept="image/*" required>
+                <input type="submit" id="pfpSubmit" value="Change">
+                <div class="nie">Go Back</div>
+            </div>
+        </form>
+    </div>
+    <div id="nameChangePopup" class="popup">
+        <div class="popup-content">
+            Change your username
+        </div>
+        <form id="nameChangeForm">
+        <div class="popup-wybor">
+            <input type="text" id="nameInput" required>
+            <input type="submit" id="nameSubmit" value="Change">
+            <div class="nie">Go Back</div>
+        </div>
+    </form>
+    </div>
+    <div id="colorChangePopup" class="popup">
+        <div class="popup-content">
+            Change color of your username
+        </div>
+        <form id="colorChangeForm">
+        <div class="popup-wybor">
+            <input type="color" id="colorInput" required>
+            <input type="submit" id="colorSubmit" value="Change">
+            <div class="nie">Go Back</div>
+        </form>
+        </div>
+    </div>
+    <div id="chatNameChangePopup" class="popup">
+        <div class="popup-content">
+            Change name of your Chat
+        </div>
+        <form id="chatNameChangeForm">
+        <div class="popup-wybor">
+            <input type="text" id="chatNameChangeInput" required>
+            <input type="submit" id="chatNameChangeSubmit" value="Change">
+            <div class="nie">Go Back</div>
+        </div>
+    </form>
+    </div>
+    <div id="chatPasswordChangePopup" class="popup">
+        <div class="popup-content">
+            Change Password of your Chat
+        </div>
+        <form id="chatPasswordChangeForm">
+        <div class="popup-wybor">
+            <input type="password" id="chatPasswordChangeInput">
+            <input type="submit" id="chatPasswordChangeSubmit" value="Change">
+            <div class="nie">Go Back</div>
+        </div>
+    </form>
+    </div>
+    <div id="progressContainer" class="popup" style="display: none;">
+        Your message is uploading
+        <div id="progressBar" style="width: 0%; height: 5px; background-color: #4caf50;"></div>
+    </div>
+    
+    <div id="chatIconChangePopup" class="popup">
+        <div class="popup-content">
+            Chane Icon of your Chat
+        </div>
+        <form id="chatIconChangeForm">
+        <div class="popup-wybor">
+            <input type="file" id="chatIconChangeInput" accept="image/*" required>
+            <input type="submit" id="chatIconChangeSubmit" value="Change">
+            <div class="nie">Go Back</div>
+        </div>
+    </form>
+    </div>
+    <div id="chatDeletePopup" class="popup">
+        <div class="popup-content">
+            Do you wanna delete this chat?
+        </div>
+        <form id="chatDeleteForm">
+        <div class="popup-wybor">
+            <input type="submit" id="chatDeleteSubmit" value="Delete">
+            <div class="nie">Go Back</div>
+        </div>
+    </form>
+    </div>
+    <div id="noclick" style="display: none; width: 100vw; height: 100vh; position: absolute; z-index: 999;">
+    <div id="popupPassword" class="popup" class="popupcontainerAndElements" style="z-index: 9999;">
+        <h2 class="popupcontainerAndElements">Input Password</h2>
+        <form class="popupcontainerAndElements">
+            <input type="password" class="popupcontainerAndElements" id="chatPasswordInput"/>
+            <input type="submit" class="popupcontainerAndElements" id="chatSubmitPassword" value="Join" id="passwordJoin"/>
+        </form>
+    </div>
+</div>
+    <div id="accountMenuContainer" class='menu'style="display: none;">
+        <div id="pfpChange">
+            <i class="material-icons" class="border-right">image</i><span class="menu-button">Change your PFP</span>
+        </div>
+        <div id="nameChange">
+            <i class="material-icons" class="border-right">edit</i><span class="menu-button">Change your username</span>
+        </div>
+        <div id="colorChange">
+            <i class="material-icons" class="border-right">palette</i><span class="menu-button">Change your color</span>
+        </div>
+        <div id="Logout" style="color: red;">
+            <i class="material-icons" class="border-right">logout</i><span class="menu-button">Logout</span>
+        </div>
+    </div>
+    <div id="MessageMenu" class='menu'>
+        <div id="DeleteMessageButton" ><i class="material-icons" class="border-right">delete</i><span class="menu-button">Delete</span></div>
+        <div id="EditMessageButton" ><i class="material-icons" class="border-right">edit</i><span class="menu-button">Edit</span></div>
+    </div>
+    <div id="chatSettingsMenuContainer" style="display: none;" class='menu'>
+        <div id="chatNameChange">
+            <i class="material-icons" class="border-right">edit</i><span class="menu-button">Change name</span>
+        </div>
+        <div id="chatPasswordChange">
+           <i class="material-icons" class="border-right">edit</i><span class="menu-button"> Change password</span>
+        </div>
+        <div id="chatIconChange">
+            <i class="material-icons" class="border-right">image</i><span class="menu-button">Change icon</span>
+        </div>
+        <div id="chatDelete" style="color: red;">
+            <i class="material-icons" class="border-right">delete_forever</i><span class="menu-button">Delete Chat</span>
+        </div>
+    </div>
+    <div id="left-side" class="side">
+        <h1 class="title"><a>Log in</a></h1>
+    </div>
+    <div id="right-side" class="side">
+        <h1 class="title"><a>Log in</a></h1>
+    </div>
+    <div class="chatroom" style="display: none;">
+        
+        <div class="side-menu">
+            <div class="konto"><img src="" alt="" id="pfpAccount"><a id="accountLink">Log in</a></div>
+            <div id="GoBack">Go back to the list</div>
+        </div>
+        <div id="Chat-selector" style="display: none;">
+            <div id="ChatCreateButton">Create your very own chat!!!</div>
+            <p id="info">Select a Chat</p>
+            <div id="Chats">
+                
+            </div>
+            <div id="ChatCreateForm" style="display: none;">
+                <form id="ChatForm">
+                    <div class="input-container">
+                        <p>Chat Name</p> <br/>
+                        <input id="Name" type="text" name="Name" required><br/>
+                    </div>
+                    <div class="input-container">
+                        <p>Password<br/>(optional)</p>
+                        <input id="password" type="password" name="password"><br/>
+                    </div>
+                    <div class="input-container">
+                        <p>Chat icon</p><br/>
+                        <input id="chatIcon" type="file" name="icon"  accept="image/*" required><br/>
+                    </div>
+                    <div id="butcon">
+                    <input type="submit" id="Create" name="Create" value="Create">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="chat" style="display: none;">
+            <div id="topContainer">
+                <h1 style="color: red;height: 100%; margin: 0;"><img alt="ikona" src="" id="chatIconTop"><a id="chatTitle">Log in</a></h1>
+                <div id="chatSettings">Chat Settings</div>
+            </div>
+            <div id="chat-messages">
+                
+            </div>
+            <div class="text">
+                <form id="messageForm" enctype="multipart/form-data">
+                    <i class="material-icons" id="reset-button" class="border">delete</i>
+                    <input type="file" id="imageInput"  accept="image/*" >
+                    <i class="material-icons" id="imgButton" class="border">image</i>
+                    <input type="text" id="textarea" autocomplete="off"> 
+                    <input type="submit" id="send" value="Send">   
+                </form>
+            </div>
+            
+        </div>
+    </div>
+    <script src="Main/script.js"></script>
+</body>
+</html>

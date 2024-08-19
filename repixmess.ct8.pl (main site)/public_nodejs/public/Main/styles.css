@@ -1,0 +1,641 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+* {
+    font-family: 'Kanit', sans-serif;
+}
+body {
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    background-image: radial-gradient(#ffffff 2px, transparent 2px);
+    background-size: 32px 32px;
+    background-color: #238b8d;
+}
+.chatroom {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    color: white;
+}
+.hidden {
+    display: none !important;
+}
+.chat {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 75vw; /* Adjust this value based on your layout */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.side-menu {
+    width: 25vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.konto {
+    margin: 15px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 2px solid white;
+    border-radius: 20px;
+    width: 80%;
+    height: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: flex-start;
+    cursor: pointer;
+    font-size: 50px;
+    text-align: center;
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s ease;
+}
+.konto:hover {
+    background-color: rgb(108, 245, 176);
+    color: #000000;
+    transform: scale(1.1);
+}
+a {
+    all: unset;
+}
+#topContainer{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    align-content: space-between;
+    
+}
+#chatSettings{
+    display: flex;
+    justify-self: center;
+    align-self: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 2px solid white;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 40px;
+    text-align: center;
+    padding: 8px;
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s ease;
+}
+#chatSettings:hover {
+    background-color: rgb(108, 245, 176);
+    color: #000000;
+    transform: scale(1.1);
+}
+#chatTitle{
+    font-size: 40px;
+}
+
+.side {
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    position: absolute;
+    overflow: hidden;
+}
+.side .title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 7vw;
+    font-weight: 800;
+    margin: 0px 10vw;
+    width: 80vw;
+}
+#left-side {
+    background-color: rgb(3, 7, 18);
+    width: 60%;
+    z-index: 2;
+}
+#left-side .title {
+    color: white;
+}
+#right-side {
+    background-color: rgb(98, 0, 234);
+}
+#right-side .title {
+    color: rgb(20, 20, 20);
+}
+#chat-messages {
+    position: static;
+    font-size: x-large;
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-color: #888 #333;
+    scrollbar-width: thin;
+    border-top: white 5px dashed;
+}
+h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#textarea {
+    width: 50%;
+    height: 4vh;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    transition: border 0.3s
+}
+
+#nameInput,#chatPasswordInput,#chatNameInputChange,#chatPasswordInputChange{
+    color: white;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    transition: border 0.3s
+}
+#textarea:focus,#nameInput:focus,#chatPasswordInput:focus,#chatNameInputChange:focus,#chatPasswordInputChange:focus {
+    border: 1px solid white;
+}
+
+#send, #Create, #chatSubmitPassword, .nie, #tak, #pfpSubmit, #nameSubmit, #colorSubmit,#chatNameChangeSubmit,#chatPasswordChangeSubmit,#chatIconChangeSubmit,#chatDeleteSubmit  {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid white;
+    color: white;
+    padding: 10px;
+    font-size: large;
+    border-radius: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+#send:hover, #Create:hover, #chatSubmitPassword:hover, .nie:hover, #tak:hover, #pfpSubmit:hover, #nameSubmit:hover, #colorSubmit:hover,#chatNameChangeSubmit:hover,#chatPasswordChangeSubmit:hover,#chatIconChangeSubmit:hover,#chatDeleteSubmit:hover {
+    background-color: rgb(108, 245, 176);
+    color: #000000;
+    transform: scale(1.1);
+}
+.popup {
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgb(20, 20, 20);
+    position: fixed;
+    z-index: 100;
+    padding: 10px;
+    color: white;
+}
+.popup-wybor {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.popup-wybor div, input {
+    margin: 5px;
+}
+.blur {
+    filter: blur(5px);
+}
+#theme {
+    right: 0%;
+    position: fixed;
+    cursor: pointer;
+    z-index: 9999;
+}
+#chatmessages::-webkit-scrollbar {
+    width: 12px;
+}
+#chatmessages::-webkit-scrollbar-track {
+    background: #333;
+}
+#chatmessages::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 20px;
+    border: 3px solid #333;
+}
+.message {
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1.5px solid rgba(0, 0, 0, 0);
+    word-wrap: break-word;
+    position: relative;
+    padding: 5px;
+    border-radius: 10px;
+}
+#MessageMenu, #accountMenuContainer,#chatSettingsMenuContainer {
+    background-color: rgb(24, 24, 24);
+    border: 1px solid rgb(20, 20, 20);
+    border-radius: 10px;
+    position: absolute;
+    width: 200px;
+    z-index: 9999;
+    padding: 10px;
+    display: none;
+    color: white;
+    text-align: left;
+    padding: 5px;
+}
+#DeleteMessageButton {
+    cursor: pointer;
+    color: red;
+}
+#Chat-selector {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 75vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+#ChatCreateButton {
+    display: flex;
+    margin: 5px;
+    width: fit-content;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgb(20, 20, 20);
+    color: white;
+    padding: 10px;
+    font-size: large;
+    border-radius: 10px;
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s ease;
+}
+#ChatCreateButton:hover {
+    background-color: rgb(108, 245, 176);
+    color: #000000;
+    transform: scale(1.1);
+}
+#ChatCreateForm {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+}
+.input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.input-container p {
+    margin-right: 50px;
+    text-align: right;
+    width: fit-content;
+    width: 400px;
+}
+.input-container input {
+    height: 60px;
+    width: 300px;
+    border: #000000 solid 1px;
+    border-radius: 20px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+.input-container input:focus {
+    transform: scale(1.1);
+}
+#Create {
+    align-items: right;
+}
+#butcon {
+    width: 100%;
+    text-align: right;
+}
+#Chats {
+    
+    display: block;
+    flex-direction: column;
+    overflow-y: scroll;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+#Chats::-webkit-scrollbar {
+    width: 12px;
+}
+#Chats::-webkit-scrollbar-track {
+    background: #333;
+}
+#Chats::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 20px;
+    border: 3px solid #333;
+}
+.ChatElements {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+    z-index: 3;
+    width: 70%;
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 40px;
+    text-align: center;
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s ease;
+}
+.ChatElements:hover {
+    background-color: rgb(108, 245, 176);
+    color: #000000;
+    transform: scale(1.1);
+}
+#GoBack {
+    margin: 15px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 2px solid white;
+    border-radius: 20px;
+    width: 80%;
+    height: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 40px;
+    text-align: center;
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.3s ease;
+}
+#GoBack:hover {
+    background-color: rgb(108, 245, 176);
+    color: #000000;
+    transform: scale(1.1);
+}
+#imageInput {
+    display: none;
+}
+form#messageForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.text {
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 80%;
+}
+#imgButton, #reset-button {
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+}
+#reset-button {
+    display: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+#info {
+    text-align: center;
+    font-size: 60px;
+    margin: 0;
+    color: #00ff15;
+}
+.menu-button {
+    border-left: 2px white solid;
+    padding-left: 15px;
+}
+#accountMenuContainer{
+    width: 300px;
+}
+#chatSettingsMenuContainer{
+    width: 200px;
+}
+/* General color input styling */
+/* Remove all styling and make the chosen color fill the input */
+input[type="color"] {
+    /* Remove default appearance */
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    
+    /* Make the input square */
+    width: 40px;
+    height: 40px;
+    
+    /* Remove any border or shadow */
+    background: none;
+    border-radius: 0; /* Make the input square, not round */
+    cursor: pointer;
+    
+    /* Transition for smooth color changes */
+    transition: transform 0.3s;
+}
+/* Add an effect when hovering */
+input[type="color"]:hover {
+    transform: scale(1.1); /* Slightly enlarge the input on hover */
+}
+/* Add an effect when focused */
+input[type="color"]:focus {
+    outline: none; /* Remove the default outline */
+    transform: scale(1.1); /* Keep the same hover effect when focused */
+}
+.popup{
+    z-index: 1000;
+}
+#pfpAccount{
+    display: flex;
+    align-self: left;
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+}
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    /* Ensure body uses column layout */
+    body {
+        flex-direction: column;
+        overflow-y: scroll;
+    }
+
+    /* Adjust the side-menu layout for mobile */
+    .side-menu {
+        width: 100%;
+        height: 10vh; /* 10% of viewport height */
+        
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 0;
+        order: 1; /* Ensures it appears first */
+    }
+
+    /* Make chat area take the remaining 90% of the viewport height */
+    .chat {
+        width: 100%;
+        height: 90vh; /* 90% of viewport height */
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        order: 2; /* Appears below the side-menu */
+    }
+
+    /* Top container within the chat area */
+    #topContainer {
+        height: 10%; /* 10% of .chat height */
+        font-size: 20px;
+    }
+    #chatSettings{
+        padding: 5px;
+        font-size: 20px;
+    }
+    /* Chat messages container */
+    #chat-messages {
+        height: 80%; /* 80% of .chat height */
+        overflow-y: auto;
+    }
+
+    /* Text input area within the chat */
+    .text {
+        height: 10%; /* 10% of .chat height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* Additional mobile-specific adjustments */
+    #textarea {
+        width: 100%;
+        height: 6vh;
+    }
+
+    #send, #Create {
+        padding: 10px 15px;
+        font-size: medium;
+    }
+
+    #pfpAccount {
+        height: 75px;
+        width: 75px;
+    }
+
+    .konto, #GoBack {
+        margin: 5px;
+        font-size: 30px;
+        height: 10vh;
+    }
+
+    #tak, .nie {
+        width: 80%;
+        font-size: 16px;
+    }
+
+    .popup {
+        width: 80vw;
+        height: auto;
+        font-size: 18px;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 6vw;
+    }
+
+    .side .title {
+        font-size: 10vw;
+    }
+
+    #left-side, #right-side {
+        width: 100%;
+        height: 100%;
+        padding: 20px 0;
+    }
+
+    .input-container input {
+        width: 80%;
+    }
+
+    #Create {
+        width: auto;
+    }
+    .input-container p {
+        font-size: 30px;
+        width: 80%;
+    }
+    #Chat-selector {
+        position: relative;
+        width: 100%;
+        height: 80%; /* Ensures visibility within mobile screen */
+        padding: 10px;
+        overflow-y: auto; /* Allows scrolling */
+    }
+    
+    .ChatElements {
+        font-size: 30px;
+        width: 90%;
+    }
+
+    /* Custom scrollbar styling for Chats */
+    #Chats::-webkit-scrollbar {
+        width: 12px; /* Adjust width as necessary */
+        position: fixed; /* Position it fixed */
+        left: 50%; /* Position in the center */
+        transform: translateX(-50%); /* Adjust position to be in the center */
+    }
+
+    #Chats::-webkit-scrollbar-track {
+        background: #333;
+    }
+
+    #Chats::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 20px;
+        border: 3px solid #333;
+    }
+
+    /* Scrollbar styling for the entire site */
+    body::-webkit-scrollbar {
+        width: 12px; /* Adjust the scrollbar width if needed */
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%); /* Centers the scrollbar */
+    }
+
+    body::-webkit-scrollbar-track {
+        background: #333; /* Customize the track background color */
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #888; /* Customize the scrollbar thumb color */
+        border-radius: 20px; /* Make the scrollbar rounded if desired */
+        border: 3px solid #333; /* Add padding to the thumb */
+    }
+
+    .message {
+        margin-top: 10px;
+    }
+}
+
+
+#progressContainer {
+    width: 50%;
+    margin-top: 10px;
+}
+
+#progressBar {
+    width: 0%;
+    height: 5px;
+    background-color: #4caf50;
+}
